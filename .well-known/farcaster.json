@@ -1,0 +1,62 @@
+{
+  "accountAssociation": {
+    "header": "placeholder_header_base64",
+    "payload": "placeholder_payload_base64", 
+    "signature": "placeholder_signature_base64"
+  },
+  "frame": {
+    "name": "Echo Pulse",
+    "iconUrl": "https://echopulse.game/icon.png",
+    "homeUrl": "https://echopulse.game",
+    "webhookUrl": "https://echopulse.game/api/webhook"
+  },
+  "miniapp": {
+    "version": "1",
+    "name": "Echo Pulse",
+    "iconUrl": "https://echopulse.game/icon.png",
+    "homeUrl": "https://echopulse.game",
+    "splashImageUrl": "https://echopulse.game/splash.png",
+    "splashBackgroundColor": "#1a1a2e",
+    "description": "Revolutionary echo-based shooting game with Web3 rewards",
+    "subtitle": "Hear. Aim. Earn.",
+    "webhookUrl": "https://echopulse.game/api/webhook",
+    "primaryCategory": "gaming",
+    "tags": [
+      "game",
+      "shooting",
+      "web3",
+      "echo",
+      "blockchain",
+      "nft",
+      "defi"
+    ],
+    "heroImageUrl": "https://echopulse.game/hero.png",
+    "screenshotUrls": [
+      "https://echopulse.game/screenshot1.png",
+      "https://echopulse.game/screenshot2.png",
+      "https://echopulse.game/screenshot3.png"
+    ],
+    "tagline": "The first echo-detection shooting game",
+    "ogTitle": "Echo Pulse - Revolutionary Echo Game",
+    "ogDescription": "Master the art of echo-detection in this revolutionary shooting game. Earn $ECHO tokens and NFTs!",
+    "ogImageUrl": "https://echopulse.game/og-image.png",
+    "requiredChains": [
+      "eip155:8453"
+    ],
+    "requiredCapabilities": [
+      "actions.ready",
+      "actions.signIn",
+      "actions.addMiniApp",
+      "actions.composeCast",
+      "wallet.getEthereumProvider",
+      "quickAuth.getToken",
+      "actions.swapToken",
+      "actions.sendToken",
+      "actions.viewToken",
+      "haptics.impactOccurred",
+      "haptics.notificationOccurred",
+      "haptics.selectionChanged"
+    ],
+    "castShareUrl": "https://echopulse.game/share"
+  }
+}

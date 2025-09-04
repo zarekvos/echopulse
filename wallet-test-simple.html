@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wallet Test</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 600px;
+            margin: 50px auto;
+            padding: 20px;
+            background: #1a1a1a;
+            color: white;
+        }
+        button {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin: 10px 5px;
+        }
+        button:hover {
+            background: #2563eb;
+        }
+        button:disabled {
+            background: #6b7280;
+            cursor: not-allowed;
+        }
+        .status {
+            padding: 15px;
+            margin: 10px 0;
+            border-radius: 8px;
+            background: #374151;
+        }
+        .success { background: #065f46; }
+        .error { background: #7f1d1d; }
+        .warning { background: #78350f; }
+        .info { background: #1e40af; }
+    </style>
+</head>
+<body>
+    <h1>Wallet Connection Test</h1>
+    
+    <div class="status" id="status">
+        <strong>Status:</strong> <span id="statusText">Checking...</span>
+    </div>
+    
+    <div>
+        <button id="detectBtn" onclick="detectWallet()">🔍 Detect MetaMask</button>
+        <button id="connectBtn" onclick="connectWallet()">🔗 Connect Wallet</button>
+        <button id="infoBtn" onclick="getWalletInfo()">ℹ️ Get Wallet Info</button>
+    </div>
+    
+    <div class="status" id="results">
+        <strong>Results:</strong>
+        <div id="resultText">Click buttons above to test wallet functionality</div>
+    </div>
+
+    <script>
+        let walletConnected = false;
+        let walletAddress = '';
+
+        // Check on page load
+        window.addEventListener('load', () => {
+            detectWallet();
+        });
+
+        function updateStatus(message, type = 'info') {
+            const statusDiv = document.getElementById('status');
+            const statusText = document.getElementById('statusText');
+            statusDiv.className = 'status ' + type;
+            statusText.textContent = message;
+        }
+
+        function updateResults(message) {
+            document.getElementById('resultText').innerHTML = message;
+        }
+
+        function detectWallet() {
+            console.log('Detecting wallet...');
+            
+            const results = [];
+            
+            // Check if ethereum object exists
+            if (typeof window.ethereum !== 'undefined') {
+                results.push('✅ window.ethereum exists');
+                
+                // Check if it's MetaMask
+                if (window.ethereum.isMetaMask) {
+                    results.push('✅ MetaMask detected');
+                } else {
+                    results.push('⚠️ Ethereum provider found but not MetaMask');
+                }
+                
+                // Check if already connected
+                if (window.ethereum.selectedAddress) {
+                    results.push(`✅ Already connected: ${window.ethereum.selectedAddress}`);
+                    walletConnected = true;
+                    walletAddress = window.ethereum.selectedAddress;
+                    updateStatus('Wallet already connected!', 'success');
+                } else {
+                    results.push('⚠️ Not connected yet');
+                    updateStatus('MetaMask detected but not connected', 'warning');
+                }
+                
+            } else {
+                results.push('❌ window.ethereum NOT found');
+                updateStatus('MetaMask not installed or not available', 'error');
+            }
+            
+            updateResults(results.join('<br>'));
+        }
+
+        async function connectWallet() {
+            console.log('Connecting wallet...');
+            updateStatus('Connecting...', 'info');
+            
+            if (typeof window.ethereum === 'undefined') {
+                updateStatus('MetaMask not found!', 'error');
+                updateResults('❌ Please install MetaMask extension first');
+                return;
+            }
+
+            try {
+                console.log('Requesting accounts...');
+                
+                // Request account access
+                const accounts = await window.ethereum.request({
+                    method: 'eth_requestAccounts',
+                });
+                
+                console.log('Accounts received:', accounts);
+                
+                if (accounts.length > 0) {
+                    walletConnected = true;
+                    walletAddress = accounts[0];
+                    
+                    updateStatus('Connected successfully!', 'success');
+                    updateResults(`✅ Connected to: ${walletAddress}<br>✅ Network: ${await getNetworkInfo()}`);
+                } else {
+                    updateStatus('No accounts found', 'error');
+                    updateResults('❌ No accounts returned from MetaMask');
+                }
+                
+            } catch (error) {
+                console.error('Connection error:', error);
+                
+                let errorMsg = 'Connection failed: ';
+                if (error.code === 4001) {
+                    errorMsg += 'User rejected the request';
+                } else if (error.code === -32002) {
+                    errorMsg += 'Request already pending - check MetaMask';
+                } else {
+                    errorMsg += error.message || 'Unknown error';
+                }
+                
+                updateStatus(errorMsg, 'error');
+                updateResults(`❌ Error code: ${error.code}<br>❌ Message: ${error.message}`);
+            }
+        }
+
+        async function getNetworkInfo() {
+            try {
+                const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                const networks = {
+                    '0x1': 'Ethereum Mainnet',
+                    '0x3': 'Ropsten Testnet',
+                    '0x4': 'Rinkeby Testnet',
+                    '0x5': 'Goerli Testnet',
+                    '0x38': 'BSC Mainnet',
+                    '0x61': 'BSC Testnet',
+                    '0x89': 'Polygon Mainnet'
+                };
+                return networks[chainId] || `Unknown Network (${chainId})`;
+            } catch (error) {
+                return 'Network info unavailable';
+            }
+        }
+
+        async function getWalletInfo() {
+            if (!walletConnected) {
+                updateResults('❌ Please connect wallet first');
+                return;
+            }
+            
+            try {
+                const balance = await window.ethereum.request({
+                    method: 'eth_getBalance',
+                    params: [walletAddress, 'latest']
+                });
+                
+                const balanceInEth = parseInt(balance, 16) / Math.pow(10, 18);
+                
+                updateResults(`
+                    ✅ Address: ${walletAddress}<br>
+                    ✅ Balance: ${balanceInEth.toFixed(4)} ETH<br>
+                    ✅ Network: ${await getNetworkInfo()}<br>
+                    ✅ Provider: ${window.ethereum.isMetaMask ? 'MetaMask' : 'Unknown'}
+                `);
+                
+            } catch (error) {
+                updateResults(`❌ Error getting wallet info: ${error.message}`);
+            }
+        }
+    </script>
+</body>
+</html>
