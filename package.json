@@ -1,49 +1,26 @@
 {
-  "name": "echo-pulse-game",
+  "name": "echopulse-game",
   "version": "1.0.0",
-  "description": "Revolutionary echo-based shooting game with Web3 integration for Farcaster",
+  "description": "Revolutionary echo-based shooting game with Web3 integration",
   "main": "index.html",
-  "type": "module",
   "scripts": {
-    "start": "python -m http.server 8000",
-    "dev": "python -m http.server 8080", 
-    "serve": "http-server -p 3000 -c-1 --cors",
-    "build": "echo 'Building Echo Pulse Mini App...' && npm run optimize",
-    "optimize": "echo 'Optimizing assets...'",
-    "test": "echo \"Running tests...\" && exit 0",
-    "webhook": "node webhook-server.js",
-    "setup": "node scripts/generate-account-association.js",
-    "setup-test": "node scripts/generate-account-association.js --test",
-    "deploy": "npm run build && echo 'Ready for deployment'",
-    "validate": "echo 'Validating Mini App configuration...' && node scripts/validate-config.js"
+    "start": "echo 'Static site - open index.html'",
+    "dev": "python -m http.server 8080",
+    "build": "echo 'Static build complete'",
+    "test": "echo 'No tests specified'"
   },
   "keywords": [
-    "game", 
-    "web3", 
-    "farcaster", 
-    "miniapp", 
-    "echo", 
-    "shooting", 
-    "pwa",
-    "blockchain",
-    "nft"
+    "game",
+    "web3",
+    "html5",
+    "javascript",
+    "pwa"
   ],
   "author": "Echo Pulse Team",
   "license": "MIT",
-  "dependencies": {
-    "@farcaster/miniapp-sdk": "^0.0.61",
-    "@farcaster/miniapp-wagmi-connector": "^1.0.0",
-    "@farcaster/miniapp-node": "^1.0.0",
-    "@farcaster/quick-auth": "^1.0.0",
-    "wagmi": "^2.0.0",
-    "viem": "^2.0.0"
-  },
-  "engines": {
-    "node": ">=22.11.0"
-  },
   "repository": {
     "type": "git",
-    "url": "https://github.com/echopulse/miniapp.git"
+    "url": "https://github.com/zarekvos/echopulse.git"
   },
-  "homepage": "https://echopulse.game"
+  "homepage": "https://echopulse.vercel.app"
 }
