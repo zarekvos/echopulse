@@ -2,24 +2,11 @@
   "buildCommand": "npm run build",
   "outputDirectory": "public",
   "rewrites": [
-    { "source": "/", "destination": "/landing.html" },
+    { "source": "/", "destination": "/index.html" },
     { "source": "/home", "destination": "/landing.html" },
     { "source": "/game", "destination": "/new-game.html" },
-    { "source": "/play", "destination": "/new-game.html" },
     { "source": "/docs", "destination": "/docs.html" },
-    { "source": "/documentation", "destination": "/docs.html" },
     { "source": "/about", "destination": "/about.html" },
-    { "source": "/team", "destination": "/about.html" },
-    { "source": "/leaderboard", "destination": "/leaderboard.html" },
-    { "source": "/rankings", "destination": "/leaderboard.html" }
-  ],
-  "routes": [
-    { "src": "/game", "dest": "/new-game.html" },
-    { "src": "/home", "dest": "/landing.html" },
-    { "src": "/docs", "dest": "/docs.html" },
-    { "src": "/about", "dest": "/about.html" },
-    { "src": "/leaderboard", "dest": "/leaderboard.html" }
-  ],
-  "cleanUrls": true,
-  "trailingSlash": false
+    { "source": "/leaderboard", "destination": "/leaderboard.html" }
+  ]
 }
