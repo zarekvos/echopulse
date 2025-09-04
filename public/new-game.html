@@ -1,0 +1,3637 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo Pulse - Game</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/Logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/Logo.png">
+    <link rel="shortcut icon" href="assets/Logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/Logo.png">
+    <meta name="msapplication-TileImage" content="assets/Logo.png">
+    
+    <!-- Fonts with preload for better performance -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preload" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" as="style" onload="this.onload=null;this.rel='stylesheet'">
+    <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap"></noscript>
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+        
+        @keyframes slideOut {
+            from {
+                transform: translateX(0);
+                opacity: 1;
+            }
+            to {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+        }
+        
+        @keyframes achievementGlow {
+            0%, 100% { box-shadow: 0 0 20px rgba(255, 215, 0, 0.5); }
+            50% { box-shadow: 0 0 40px rgba(255, 215, 0, 0.8); }
+        }
+        
+        @keyframes levelUpPulse {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+            100% { transform: scale(1); }
+        }
+        
+        .notification {
+            --success: #00ff88;
+            --warning: #ffaa00;
+            --info: #00aaff;
+            --achievement: #ffd700;
+            --legendary: #ff6b35;
+        }
+        
+        .achievement-notification {
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 2px solid var(--achievement);
+            border-radius: 15px;
+            padding: 1.5rem;
+            max-width: 350px;
+            z-index: 10000;
+            animation: slideIn 0.5s ease-out, achievementGlow 2s ease-in-out infinite;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+        }
+        
+        .achievement-header {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 10px;
+        }
+        
+        .achievement-icon {
+            width: 40px;
+            height: 40px;
+            background: var(--achievement);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: #1a1a2e;
+        }
+        
+        .achievement-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--achievement);
+        }
+        
+        .achievement-subtitle {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+        
+        .achievement-message {
+            color: var(--text-primary);
+            font-size: 1rem;
+            line-height: 1.4;
+            margin-bottom: 10px;
+        }
+        
+        .achievement-reward {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--success);
+            border-radius: 8px;
+            padding: 8px 12px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.9rem;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .modal-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0, 0, 0, 0.8);
+            backdrop-filter: blur(5px);
+            z-index: 9999;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .achievement-modal {
+            background: linear-gradient(135deg, #1a1a2e, #16213e);
+            border: 2px solid var(--achievement);
+            border-radius: 20px;
+            padding: 2rem;
+            max-width: 400px;
+            text-align: center;
+            animation: levelUpPulse 1s ease-in-out;
+            box-shadow: 0 0 50px rgba(255, 215, 0, 0.5);
+        }
+        
+        .achievement-modal-icon {
+            width: 80px;
+            height: 80px;
+            background: var(--achievement);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: #1a1a2e;
+            margin: 0 auto 1rem;
+            box-shadow: 0 0 30px rgba(255, 215, 0, 0.6);
+        }
+        
+        .achievement-modal-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--achievement);
+            margin-bottom: 0.5rem;
+        }
+        
+        .achievement-modal-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+        }
+        
+        .achievement-modal-message {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            line-height: 1.5;
+            margin-bottom: 1.5rem;
+        }
+        
+        .achievement-modal-rewards {
+            display: grid;
+            gap: 10px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .achievement-reward-item {
+            background: rgba(0, 255, 136, 0.1);
+            border: 1px solid var(--success);
+            border-radius: 10px;
+            padding: 12px;
+            font-family: 'Orbitron', monospace;
+            color: var(--success);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+        }
+        
+        .achievement-modal-close {
+            background: var(--gradient-main);
+            color: white;
+            border: none;
+            padding: 12px 30px;
+            border-radius: 25px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .achievement-modal-close:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 5px 15px rgba(59, 130, 246, 0.4);
+        }
+        
+        :root {
+            --primary-blue: #0ea5e9;
+            --primary-purple: #8b5cf6;
+            --primary-cyan: #06b6d4;
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --gradient-main: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            overflow: hidden;
+        }
+        
+        /* Game Container */
+        .game-wrapper {
+            width: 100vw;
+            height: 100vh;
+            position: relative;
+            background: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.1) 0%, var(--dark-bg) 70%);
+        }
+        
+        /* Top UI Bar */
+        .top-ui {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 60px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 0 2rem;
+            z-index: 1000;
+        }
+        
+        .logo {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.2rem;
+            font-weight: 900;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .game-stats {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+        
+        .stat-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+        }
+        
+        .stat-item .icon {
+            color: var(--primary-blue);
+        }
+        
+        .wallet-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .wallet-address {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--success);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            font-family: 'Orbitron', monospace;
+            font-size: 0.875rem;
+        }
+        
+        .menu-btn {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.2);
+            color: var(--text-primary);
+            padding: 0.5rem 1rem;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .menu-btn:hover {
+            background: rgba(255, 255, 255, 0.2);
+        }
+        
+        /* Game Canvas */
+        .game-canvas-container {
+            position: absolute;
+            top: 160px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            padding: 2rem;
+        }
+        
+        #gameCanvas {
+            border: 2px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            background: radial-gradient(ellipse at center, rgba(6, 182, 212, 0.05) 0%, rgba(0, 0, 0, 0.8) 100%);
+            box-shadow: 0 0 50px rgba(59, 130, 246, 0.2);
+        }
+        
+        /* Game UI Overlay */
+        .game-ui-overlay {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            pointer-events: none;
+            z-index: 100;
+        }
+        
+        /* Health and Energy Bars */
+        .player-status {
+            position: absolute;
+            bottom: 2rem;
+            left: 2rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.75rem;
+            pointer-events: auto;
+            z-index: 200;
+        }
+        
+        .status-bar {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            padding: 0.75rem 1rem;
+            border-radius: 10px;
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            min-width: 220px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+        }
+        
+        .status-icon {
+            font-size: 1.5rem;
+        }
+        
+        .status-content {
+            flex: 1;
+        }
+        
+        .status-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 8px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            border-radius: 4px;
+            transition: width 0.3s ease;
+        }
+        
+        .health-fill {
+            background: linear-gradient(90deg, var(--danger), var(--warning), var(--success));
+        }
+        
+        .energy-fill {
+            background: linear-gradient(90deg, var(--primary-cyan), var(--primary-blue));
+        }
+        
+        /* Mini Map - Now Enemies Remaining Bar */
+        .mini-map {
+            position: absolute;
+            top: 80px;
+            left: 2rem;
+            right: 2rem;
+            width: auto;
+            height: 60px;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            border-radius: 10px;
+            pointer-events: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 200;
+        }
+        
+        .mini-map-content {
+            padding: 1rem 2rem;
+            text-align: center;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 1rem;
+            height: 100%;
+        }
+        
+        .mini-map h4 {
+            font-size: 1rem;
+            margin: 0;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        
+        .enemies-remaining {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--danger);
+        }
+        
+        /* Controls Help */
+        .controls-help {
+            position: absolute;
+            bottom: 2rem;
+            right: 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            border-radius: 10px;
+            padding: 1rem;
+            pointer-events: auto;
+            min-width: 180px;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 200;
+        }
+        
+        /* Audio Controls */
+        .audio-controls {
+            position: absolute;
+            top: 160px;
+            right: 2rem;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(10px);
+            border: 1px solid rgba(59, 130, 246, 0.4);
+            border-radius: 10px;
+            padding: 1rem;
+            pointer-events: auto;
+            display: flex;
+            flex-direction: row;
+            gap: 1rem;
+            align-items: center;
+            min-width: auto;
+            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.3);
+            z-index: 201;
+        }
+        
+        .audio-control-group {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .audio-control-label {
+            font-size: 0.75rem;
+            color: var(--text-secondary);
+            white-space: nowrap;
+        }
+        
+        .audio-toggle {
+            background: rgba(139, 69, 255, 0.2);
+            border: 1px solid rgba(139, 69, 255, 0.5);
+            border-radius: 15px;
+            width: 40px;
+            height: 20px;
+            position: relative;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            padding: 0.2rem 0.4rem;
+            font-size: 0.7rem;
+            color: white;
+            text-align: center;
+            line-height: 1;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        
+        .audio-toggle.active {
+            background: rgba(34, 197, 94, 0.6);
+            border-color: rgba(34, 197, 94, 0.8);
+            color: white;
+        }
+        
+        .audio-toggle.active::after {
+            content: 'ON';
+        }
+        
+        .audio-toggle:not(.active)::after {
+            content: 'OFF';
+        }
+        
+        .audio-toggle-slider {
+            position: absolute;
+            top: 2px;
+            left: 2px;
+            width: 22px;
+            height: 22px;
+            background: white;
+            border-radius: 50%;
+            transition: transform 0.3s ease;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .audio-toggle.active .audio-toggle-slider {
+            transform: translateX(24px);
+        }
+        
+        .volume-slider {
+            width: 100px;
+            height: 4px;
+            background: rgba(255, 255, 255, 0.2);
+            border-radius: 2px;
+            outline: none;
+            cursor: pointer;
+            position: relative;
+        }
+        
+        .volume-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 16px;
+            height: 16px;
+            background: var(--primary-purple);
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .volume-slider::-moz-range-thumb {
+            width: 16px;
+            height: 16px;
+            background: var(--primary-purple);
+            border-radius: 50%;
+            cursor: pointer;
+            border: none;
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.3);
+        }
+        
+        .volume-control {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+        
+        .volume-slider {
+            width: 80px;
+            height: 4px;
+            background: rgba(139, 69, 255, 0.3);
+            border-radius: 2px;
+            cursor: pointer;
+            appearance: none;
+            outline: none;
+        }
+        
+        .volume-slider::-webkit-slider-thumb {
+            appearance: none;
+            width: 12px;
+            height: 12px;
+            background: var(--primary-purple);
+            border-radius: 50%;
+            cursor: pointer;
+        }
+        
+        .controls-help h4 {
+            font-size: 0.875rem;
+            margin-bottom: 0.75rem;
+            color: var(--text-secondary);
+        }
+        
+        .control-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .key {
+            background: rgba(255, 255, 255, 0.1);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Orbitron', monospace;
+            font-size: 0.75rem;
+        }
+        
+        /* Weapon Selection */
+        .weapon-selector {
+            position: absolute;
+            left: 2rem;
+            bottom: 14rem;
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            pointer-events: auto;
+        }
+        
+        .weapon-btn {
+            width: 50px;
+            height: 50px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 1.2rem;
+        }
+        
+        .weapon-btn:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+            background: rgba(59, 130, 246, 0.1);
+        }
+        
+        .weapon-btn.active {
+            border-color: var(--success);
+            color: var(--success);
+            background: rgba(34, 197, 94, 0.2);
+        }
+        
+        /* Start Screen */
+        .start-screen {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 2000;
+        }
+        
+        .start-content {
+            text-align: center;
+            max-width: 500px;
+            padding: 2rem;
+        }
+        
+        .start-content h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            margin-bottom: 1rem;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .start-content p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            line-height: 1.6;
+        }
+        
+        .connect-wallet-btn {
+            background: var(--gradient-main);
+            color: white;
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            border: none;
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .connect-wallet-btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 25px rgba(59, 130, 246, 0.4);
+        }
+        
+        .start-game-btn {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--success);
+            padding: 1rem 2rem;
+            border-radius: 12px;
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            font-weight: 600;
+            font-size: 1.1rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            opacity: 0.5;
+            pointer-events: none;
+        }
+        
+        .start-game-btn.enabled {
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .start-game-btn.enabled:hover {
+            background: rgba(34, 197, 94, 0.3);
+            transform: translateY(-2px);
+        }
+        
+        .start-game-btn.guest-mode {
+            background: rgba(108, 117, 125, 0.8);
+            color: white;
+            opacity: 1;
+            pointer-events: auto;
+            border: 1px solid rgba(108, 117, 125, 0.5);
+        }
+        
+        .start-game-btn.guest-mode:hover {
+            background: rgba(108, 117, 125, 1);
+            transform: translateY(-2px);
+        }
+        
+        .start-game-btn.wallet-mode.enabled {
+            background: rgba(34, 197, 94, 0.8);
+            color: white;
+            opacity: 1;
+            pointer-events: auto;
+        }
+        
+        .start-game-btn.wallet-mode.enabled:hover {
+            background: rgba(34, 197, 94, 1);
+            transform: translateY(-2px);
+        }
+        
+        .game-mode-info {
+            font-family: 'Orbitron', monospace;
+        }
+        
+        /* Mobile Responsive */
+        /* Enhanced Mobile Responsive */
+        @media (max-width: 768px) {
+            .top-ui {
+                padding: 0 1rem;
+                flex-wrap: wrap;
+                gap: 0.5rem;
+            }
+            
+            .game-stats {
+                gap: 0.75rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .stat-item {
+                font-size: 0.8rem;
+                padding: 0.25rem 0.5rem;
+                min-width: auto;
+            }
+            
+            .wallet-info {
+                flex-direction: column;
+                gap: 0.5rem;
+                align-items: center;
+            }
+            
+            .wallet-address {
+                font-size: 0.8rem;
+                padding: 0.25rem 0.5rem;
+            }
+            
+            .menu-btn {
+                padding: 0.375rem 0.75rem;
+                font-size: 0.875rem;
+            }
+            
+            /* Start Screen Mobile */
+            .start-screen {
+                padding: 2rem 1rem;
+            }
+            
+            .start-content {
+                max-width: 100%;
+                padding: 2rem 1.5rem;
+            }
+            
+            .start-content h1 {
+                font-size: 2.5rem;
+                margin-bottom: 1rem;
+            }
+            
+            .start-content p {
+                font-size: 1rem;
+                line-height: 1.6;
+                margin-bottom: 2rem;
+            }
+            
+            .connect-wallet-btn,
+            .start-game-btn {
+                width: 100%;
+                padding: 0.875rem 1.5rem;
+                font-size: 1rem;
+                margin-bottom: 1rem;
+            }
+            
+            .game-mode-info {
+                padding: 0.875rem !important;
+                font-size: 0.875rem;
+            }
+            
+            /* Game Canvas Mobile */
+            .game-canvas-container {
+                top: 120px;
+                padding: 0 1rem;
+            }
+            
+            #gameCanvas {
+                max-width: 100%;
+                height: auto;
+            }
+            
+            /* Player Status Mobile */
+            .player-status,
+            .mini-map,
+            .controls-help {
+                bottom: 1rem;
+                left: 1rem;
+                right: 1rem;
+                padding: 0.75rem;
+                font-size: 0.875rem;
+            }
+            
+            .status-bars {
+                gap: 0.75rem;
+            }
+            
+            .status-bar {
+                height: 8px;
+            }
+            
+            /* Weapon Selection Mobile */
+            .weapon-selection {
+                bottom: 1rem;
+                left: 50%;
+                transform: translateX(-50%);
+                flex-direction: row;
+                gap: 0.5rem;
+                background: rgba(0, 0, 0, 0.8);
+                padding: 0.5rem;
+                border-radius: 12px;
+                backdrop-filter: blur(10px);
+            }
+            
+            .weapon-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+                border-radius: 8px;
+            }
+        }
+        
+        /* Audio Controls Mobile */
+        @media (max-width: 768px) {
+            .audio-controls {
+                position: fixed;
+                top: 120px;
+                right: 1rem;
+                left: 1rem;
+                flex-direction: row;
+                justify-content: center;
+                gap: 1rem;
+                padding: 0.75rem;
+                min-width: auto;
+                width: auto;
+                background: rgba(0, 0, 0, 0.9);
+                border-radius: 12px;
+                backdrop-filter: blur(15px);
+                z-index: 201;
+                box-shadow: 0 4px 20px rgba(0, 255, 255, 0.3);
+            }
+            
+            .mini-map {
+                top: 60px;
+                left: 1rem;
+                right: 1rem;
+                height: 50px;
+            }
+            
+            .mini-map-content {
+                padding: 0.75rem 1rem;
+                gap: 0.75rem;
+            }
+            
+            .mini-map h4 {
+                font-size: 0.875rem;
+            }
+            
+            .enemies-remaining {
+                font-size: 1.5rem;
+            }
+            
+            .weapon-selector {
+                left: 1rem;
+                bottom: 10rem;
+                flex-direction: row;
+                gap: 0.5rem;
+            }
+            
+            .weapon-btn {
+                width: 45px;
+                height: 45px;
+                font-size: 1rem;
+            }
+            
+            .audio-control-group {
+                align-items: center;
+                gap: 0.5rem;
+            }
+            
+            .audio-toggle {
+                padding: 0.25rem 0.5rem;
+                font-size: 0.75rem;
+                min-width: 50px;
+            }
+            
+            .volume-control {
+                width: 100px;
+            }
+            
+            .volume-slider {
+                width: 80px;
+                height: 4px;
+            }
+        }
+        
+        /* Extra Small Mobile */
+        @media (max-width: 480px) {
+            .start-content h1 {
+                font-size: 2rem;
+            }
+            
+            .start-content {
+                padding: 1.5rem 1rem;
+            }
+            
+            .game-stats {
+                font-size: 0.75rem;
+            }
+            
+            .stat-item {
+                font-size: 0.75rem;
+                padding: 0.2rem 0.4rem;
+            }
+            
+            .top-ui {
+                padding: 0 0.5rem;
+                min-height: 100px;
+            }
+            
+            .game-canvas-container {
+                top: 180px;
+                padding: 0 0.5rem;
+            }
+            
+            .wallet-address {
+                font-size: 0.75rem;
+                max-width: 120px;
+                overflow: hidden;
+                text-overflow: ellipsis;
+            }
+            
+            .audio-controls {
+                top: 110px;
+                right: 0.5rem;
+                left: 0.5rem;
+                padding: 0.5rem;
+                flex-direction: row;
+                gap: 0.5rem;
+            }
+            
+            .mini-map {
+                top: 60px;
+                left: 0.5rem;
+                right: 0.5rem;
+                height: 45px;
+            }
+            
+            .mini-map-content {
+                padding: 0.5rem;
+                gap: 0.5rem;
+            }
+            
+            .mini-map h4 {
+                font-size: 0.75rem;
+            }
+            
+            .enemies-remaining {
+                font-size: 1.25rem;
+            }
+            
+            .weapon-selector {
+                left: 0.5rem;
+                bottom: 8rem;
+            }
+            
+            .weapon-btn {
+                width: 40px;
+                height: 40px;
+                font-size: 0.9rem;
+            }
+            
+            .audio-toggle {
+                padding: 0.2rem 0.4rem;
+                font-size: 0.7rem;
+                min-width: 40px;
+            }
+            
+            .volume-control {
+                width: 80px;
+            }
+            
+            .volume-slider {
+                width: 60px;
+                height: 3px;
+            }
+        }
+        
+        /* Landscape Mobile */
+        @media (max-width: 768px) and (orientation: landscape) {
+            .start-screen {
+                padding: 1rem;
+            }
+            
+            .start-content {
+                max-height: 90vh;
+                overflow-y: auto;
+                padding: 1.5rem;
+            }
+            
+            .start-content h1 {
+                font-size: 2rem;
+                margin-bottom: 0.5rem;
+            }
+            
+            .start-content p {
+                font-size: 0.9rem;
+                margin-bottom: 1rem;
+            }
+            
+            .game-canvas-container {
+                top: 80px;
+            }
+            
+            .top-ui {
+                min-height: 80px;
+            }
+        }
+        
+        /* Tablet Responsive */
+        @media (max-width: 1024px) and (min-width: 769px) {
+            .start-content {
+                padding: 3rem 2rem;
+                max-width: 600px;
+            }
+            
+            .game-stats {
+                gap: 1.5rem;
+            }
+            
+            .top-ui {
+                padding: 0 2rem;
+            }
+            
+            .game-canvas-container {
+                padding: 0 2rem;
+            }
+            
+            .mini-map {
+                position: relative;
+                width: 100%;
+                height: auto;
+                margin-bottom: 1rem;
+            }
+            
+            .weapon-selector {
+                left: 1rem;
+                flex-direction: row;
+                top: auto;
+                bottom: 8rem;
+                transform: none;
+            }
+        }
+        
+        /* Loading Animation */
+        .loading {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            text-align: center;
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(59, 130, 246, 0.3);
+            border-top: 3px solid var(--primary-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Touch Controls for Mobile */
+        .touch-controls {
+            position: fixed;
+            bottom: 2rem;
+            left: 50%;
+            transform: translateX(-50%);
+            display: none;
+            gap: 1rem;
+            z-index: 200;
+            align-items: center;
+        }
+        
+        .touch-joystick {
+            width: 80px;
+            height: 80px;
+            background: rgba(0, 0, 0, 0.7);
+            border: 2px solid var(--accent-cyan);
+            border-radius: 50%;
+            position: relative;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(0, 255, 255, 0.3);
+            flex-shrink: 0;
+        }
+        
+        .touch-joystick-inner {
+            width: 30px;
+            height: 30px;
+            background: var(--accent-cyan);
+            border-radius: 50%;
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: all 0.1s ease;
+            box-shadow: 0 2px 10px rgba(0, 255, 255, 0.5);
+        }
+        
+        .touch-actions {
+            display: flex;
+            flex-direction: column;
+            gap: 0.5rem;
+            align-items: center;
+        }
+        
+        .touch-fire-btn {
+            width: 70px;
+            height: 70px;
+            background: rgba(255, 0, 100, 0.8);
+            border: 2px solid var(--accent-pink);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.5rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(255, 0, 100, 0.3);
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .touch-fire-btn:active {
+            transform: scale(0.95);
+            background: rgba(255, 0, 100, 1);
+        }
+        
+        .touch-echo-btn {
+            width: 60px;
+            height: 60px;
+            background: rgba(100, 255, 0, 0.8);
+            border: 2px solid #64ff00;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1.2rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(100, 255, 0, 0.3);
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .touch-echo-btn:active {
+            transform: scale(0.95);
+            background: rgba(100, 255, 0, 1);
+        }
+        
+        .touch-weapon-switch {
+            width: 50px;
+            height: 50px;
+            background: rgba(59, 130, 246, 0.8);
+            border: 2px solid var(--primary-blue);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 1rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 15px rgba(59, 130, 246, 0.3);
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
+        }
+        
+        .touch-weapon-switch:active {
+            transform: scale(0.95);
+            background: rgba(59, 130, 246, 1);
+        }
+        
+        @media (max-width: 768px) {
+            .touch-controls {
+                display: flex;
+            }
+            
+            .controls-help {
+                display: none;
+            }
+            
+            .weapon-selector {
+                display: none;
+            }
+        }
+        
+        @media (max-width: 768px) and (orientation: landscape) {
+            .touch-controls {
+                bottom: 1rem;
+                gap: 0.75rem;
+            }
+            
+            .touch-joystick {
+                width: 70px;
+                height: 70px;
+            }
+            
+            .touch-fire-btn {
+                width: 60px;
+                height: 60px;
+                font-size: 1.2rem;
+            }
+            
+            .touch-echo-btn {
+                width: 50px;
+                height: 50px;
+                font-size: 1rem;
+            }
+            
+            .touch-weapon-switch {
+                width: 45px;
+                height: 45px;
+                font-size: 0.9rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="game-wrapper">
+        <!-- Top UI Bar -->
+        <div class="top-ui">
+            <div class="logo">
+                <i class="bi bi-soundwave"></i> Echo Pulse
+            </div>
+            
+            <div class="game-stats">
+                <div class="stat-item">
+                    <i class="bi bi-trophy icon"></i>
+                    <span>Level: <span id="currentLevel">1</span></span>
+                </div>
+                <div class="stat-item">
+                    <i class="bi bi-star icon"></i>
+                    <span>Score: <span id="currentScore">0</span></span>
+                </div>
+                <div class="stat-item">
+                    <i class="bi bi-clock icon"></i>
+                    <span id="gameTimer">00:00</span>
+                </div>
+                <div class="stat-item" id="gameModeIndicator">
+                    <i class="bi bi-person icon"></i>
+                    <span id="currentGameMode">Guest Mode</span>
+                </div>
+            </div>
+            
+            <div class="wallet-info">
+                <div class="wallet-address" id="walletDisplay">
+                    <i class="bi bi-wallet2"></i> Not Connected
+                </div>
+                <button class="menu-btn" onclick="showMenu()">
+                    <i class="bi bi-list"></i>
+                </button>
+            </div>
+        </div>
+        
+        <!-- Game Canvas -->
+        <div class="game-canvas-container">
+            <canvas id="gameCanvas" width="800" height="600"></canvas>
+        </div>
+        
+        <!-- Game UI Overlay -->
+        <div class="game-ui-overlay">
+            <!-- Audio Controls -->
+            <div class="audio-controls">
+                <div class="audio-control-group">
+                    <span class="audio-control-label">Music</span>
+                    <button class="audio-toggle active" id="musicToggle">ON</button>
+                </div>
+                <div class="audio-control-group">
+                    <span class="audio-control-label">SFX</span>
+                    <button class="audio-toggle active" id="sfxToggle">ON</button>
+                </div>
+                <div class="audio-control-group">
+                    <span class="audio-control-label">Vol</span>
+                    <input type="range" class="volume-slider" id="masterVolume" min="0" max="100" value="70">
+                </div>
+            </div>
+            
+            <!-- Player Status -->
+            <div class="player-status">
+                <div class="status-bar">
+                    <i class="bi bi-heart-fill status-icon" style="color: var(--danger);"></i>
+                    <div class="status-content">
+                        <div class="status-label">Health</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill health-fill" id="healthBar" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="status-bar">
+                    <i class="bi bi-lightning-fill status-icon" style="color: var(--primary-cyan);"></i>
+                    <div class="status-content">
+                        <div class="status-label">Echo Energy</div>
+                        <div class="progress-bar">
+                            <div class="progress-fill energy-fill" id="energyBar" style="width: 100%;"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Mini Map -->
+            <div class="mini-map">
+                <div class="mini-map-content">
+                    <h4>Enemies Remaining</h4>
+                    <div class="enemies-remaining" id="enemiesCount">3</div>
+                </div>
+            </div>
+            
+            <!-- Controls Help -->
+            <div class="controls-help">
+                <h4>Controls</h4>
+                <div class="control-item">
+                    <span>Move</span>
+                    <span class="key">WASD</span>
+                </div>
+                <div class="control-item">
+                    <span>Shoot</span>
+                    <span class="key">CLICK</span>
+                </div>
+                <div class="control-item">
+                    <span>Echo Pulse</span>
+                    <span class="key">SPACE</span>
+                </div>
+                <div class="control-item">
+                    <span>Switch Weapon</span>
+                    <span class="key">1-3</span>
+                </div>
+            </div>
+            
+            <!-- Weapon Selector -->
+            <div class="weapon-selector">
+                <div class="weapon-btn active" data-weapon="pulse" title="Echo Pulse Gun">
+                    <i class="bi bi-soundwave"></i>
+                </div>
+                <div class="weapon-btn" data-weapon="rapid" title="Rapid Fire">
+                    <i class="bi bi-lightning"></i>
+                </div>
+                <div class="weapon-btn" data-weapon="heavy" title="Heavy Cannon">
+                    <i class="bi bi-circle-fill"></i>
+                </div>
+            </div>
+            
+            <!-- Touch Controls for Mobile -->
+            <div class="touch-controls">
+                <div class="touch-joystick" id="touchJoystick">
+                    <div class="touch-joystick-inner" id="joystickInner"></div>
+                </div>
+                <div class="touch-actions">
+                    <div class="touch-fire-btn" id="touchFireBtn">
+                        <i class="bi bi-cursor-fill"></i>
+                    </div>
+                    <div class="touch-echo-btn" id="touchEchoBtn">
+                        <i class="bi bi-soundwave"></i>
+                    </div>
+                    <div class="touch-weapon-switch" id="touchWeaponBtn">
+                        <i class="bi bi-lightning"></i>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Start Screen -->
+        <div class="start-screen" id="startScreen">
+            <div class="start-content">
+                <h1>Echo Pulse</h1>
+                <p>Hunt invisible enemies using advanced echo detection. Connect your Web3 wallet to save progress and compete on the global leaderboard.</p>
+                
+                <div style="margin-bottom: 2rem;">
+                    <button class="connect-wallet-btn" id="connectWalletBtn" onclick="connectWallet()">
+                        <i class="bi bi-wallet2"></i>
+                        Connect Wallet
+                    </button>
+                </div>
+                
+                <div class="game-mode-selection" id="gameModeSection" style="margin-bottom: 2rem;">
+                    <div class="game-mode-info" style="background: rgba(255, 193, 7, 0.1); border: 1px solid rgba(255, 193, 7, 0.3); padding: 1rem; border-radius: 8px; margin-bottom: 1rem;">
+                        <i class="bi bi-info-circle" style="color: var(--warning);"></i>
+                        <span style="color: var(--warning); font-size: 0.9rem; margin-left: 0.5rem;">
+                            <strong>Guest Mode:</strong> Play without wallet connection - No rewards or leaderboard saves
+                        </span>
+                    </div>
+                    
+                    <button class="start-game-btn guest-mode" id="startGuestGameBtn" onclick="startGame(false)" style="background: rgba(108, 117, 125, 0.8); margin-bottom: 1rem; width: 100%;">
+                        <i class="bi bi-play-fill"></i>
+                        Play as Guest (No Rewards)
+                    </button>
+                    
+                    <button class="start-game-btn wallet-mode" id="startWalletGameBtn" onclick="startGame(true)" style="background: var(--success); opacity: 0.5; cursor: not-allowed; width: 100%;" disabled>
+                        <i class="bi bi-trophy-fill"></i>
+                        Play with Rewards (Wallet Required)
+                    </button>
+                </div>
+                
+                <div style="margin-top: 2rem;">
+                    <a href="landing.html" style="color: var(--text-secondary); text-decoration: none;">
+                        <i class="bi bi-arrow-left"></i> Back to Home
+                    </a>
+                </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Game Script -->
+    <script>
+        // Game Variables
+        let canvas, ctx;
+        let gameState = 'start'; // start, playing, paused, gameOver
+        let player, enemies = [], bullets = [], particles = [];
+        let keys = {};
+        let mousePos = { x: 0, y: 0 };
+        let currentWeapon = 'pulse';
+        let gameStats = {
+            level: 1,
+            score: 0,
+            health: 100,
+            energy: 100,
+            enemiesRemaining: 3,
+            enemiesKilled: 0,
+            echoUsageCount: 0
+        };
+        let gameTimer = 0;
+        let walletConnected = false;
+        let walletAddress = '';
+        let gameMode = 'guest'; // 'guest' or 'wallet'
+        
+        // Enhanced Player Class with Cyberpunk Robot Design
+        class Player {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.width = 40;
+                this.height = 40;
+                this.speed = 5;
+                this.angle = 0;
+                this.health = 100;
+                this.energy = 100;
+                this.energyRegenRate = 1;
+                this.lastEchoTime = 0;
+                this.echoCooldown = 1000; // 1 second
+                
+                // Animation properties
+                this.frame = 0;
+                this.animationSpeed = 0.2;
+                this.isMoving = false;
+            }
+            
+            update() {
+                // Handle movement - keyboard controls
+                this.isMoving = false;
+                if (keys['w'] || keys['ArrowUp']) {
+                    this.y -= this.speed;
+                    this.isMoving = true;
+                }
+                if (keys['s'] || keys['ArrowDown']) {
+                    this.y += this.speed;
+                    this.isMoving = true;
+                }
+                if (keys['a'] || keys['ArrowLeft']) {
+                    this.x -= this.speed;
+                    this.isMoving = true;
+                }
+                if (keys['d'] || keys['ArrowRight']) {
+                    this.x += this.speed;
+                    this.isMoving = true;
+                }
+                
+                // Handle movement - touch controls
+                if (Math.abs(touchMovement.x) > 0.1 || Math.abs(touchMovement.y) > 0.1) {
+                    this.x += touchMovement.x * this.speed;
+                    this.y += touchMovement.y * this.speed;
+                    this.isMoving = true;
+                }
+                
+                // Keep player in bounds
+                this.x = Math.max(this.width/2, Math.min(canvas.width - this.width/2, this.x));
+                this.y = Math.max(this.height/2, Math.min(canvas.height - this.height/2, this.y));
+                
+                // Calculate angle to mouse or touch direction
+                if (touchFiring || Math.abs(touchMovement.x) > 0.1 || Math.abs(touchMovement.y) > 0.1) {
+                    // For touch, use movement direction or default forward
+                    if (Math.abs(touchMovement.x) > 0.1 || Math.abs(touchMovement.y) > 0.1) {
+                        this.angle = Math.atan2(touchMovement.y, touchMovement.x);
+                    } else {
+                        this.angle = 0; // Default to right
+                    }
+                } else {
+                    // Use mouse position for desktop
+                    this.angle = Math.atan2(mousePos.y - this.y, mousePos.x - this.x);
+                }
+                
+                // Regenerate energy
+                if (this.energy < 100) {
+                    this.energy = Math.min(100, this.energy + this.energyRegenRate * 0.1);
+                }
+                
+                // Update animation frame
+                if (this.isMoving) {
+                    this.frame += this.animationSpeed;
+                }
+            }
+            
+            draw() {
+                ctx.save();
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                
+                // Draw cyberpunk robot player
+                this.drawRobotPlayer();
+                
+                ctx.restore();
+                
+                // Draw health bar above player
+                this.drawHealthBar();
+            }
+            
+            drawRobotPlayer() {
+                const size = this.width;
+                const pulseEffect = Math.sin(Date.now() * 0.01) * 0.1 + 1;
+                
+                // Main body (hexagonal)
+                ctx.beginPath();
+                ctx.fillStyle = '#1e40af';
+                const bodySize = size * 0.6;
+                for (let i = 0; i < 6; i++) {
+                    const angle = (i * Math.PI) / 3;
+                    const x = Math.cos(angle) * bodySize * 0.5;
+                    const y = Math.sin(angle) * bodySize * 0.5;
+                    if (i === 0) ctx.moveTo(x, y);
+                    else ctx.lineTo(x, y);
+                }
+                ctx.closePath();
+                ctx.fill();
+                
+                // Glowing outline
+                ctx.strokeStyle = `rgba(59, 130, 246, ${pulseEffect})`;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Core energy center
+                ctx.beginPath();
+                ctx.arc(0, 0, size * 0.2, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(6, 182, 212, ${pulseEffect})`;
+                ctx.fill();
+                
+                // Weapon barrel
+                ctx.beginPath();
+                ctx.rect(size * 0.3, -3, size * 0.4, 6);
+                ctx.fillStyle = '#374151';
+                ctx.fill();
+                
+                // Weapon tip glow
+                ctx.beginPath();
+                ctx.arc(size * 0.7, 0, 3, 0, Math.PI * 2);
+                ctx.fillStyle = this.getWeaponColor();
+                ctx.fill();
+                
+                // Shoulder pads
+                ctx.beginPath();
+                ctx.rect(-size * 0.4, -size * 0.35, size * 0.2, size * 0.3);
+                ctx.rect(-size * 0.4, size * 0.05, size * 0.2, size * 0.3);
+                ctx.fillStyle = '#4b5563';
+                ctx.fill();
+                
+                // Eyes/sensors
+                ctx.beginPath();
+                ctx.arc(-size * 0.1, -size * 0.15, 3, 0, Math.PI * 2);
+                ctx.arc(-size * 0.1, size * 0.15, 3, 0, Math.PI * 2);
+                ctx.fillStyle = '#ef4444';
+                ctx.fill();
+                
+                // Energy lines (animation)
+                if (this.isMoving) {
+                    ctx.strokeStyle = `rgba(6, 182, 212, 0.6)`;
+                    ctx.lineWidth = 1;
+                    ctx.beginPath();
+                    ctx.moveTo(-size * 0.3, 0);
+                    ctx.lineTo(-size * 0.5, Math.sin(this.frame) * 5);
+                    ctx.moveTo(-size * 0.3, -size * 0.2);
+                    ctx.lineTo(-size * 0.5, -size * 0.2 + Math.cos(this.frame) * 3);
+                    ctx.moveTo(-size * 0.3, size * 0.2);
+                    ctx.lineTo(-size * 0.5, size * 0.2 + Math.sin(this.frame + 1) * 3);
+                    ctx.stroke();
+                }
+            }
+            
+            getWeaponColor() {
+                switch(currentWeapon) {
+                    case 'pulse': return '#06b6d4';
+                    case 'rapid': return '#f59e0b';
+                    case 'heavy': return '#ef4444';
+                    default: return '#06b6d4';
+                }
+            }
+            
+            drawHealthBar() {
+                const barWidth = 40;
+                const barHeight = 4;
+                const x = this.x - barWidth / 2;
+                const y = this.y - this.height / 2 - 10;
+                
+                // Background
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+                ctx.fillRect(x, y, barWidth, barHeight);
+                
+                // Health
+                const healthPercent = this.health / 100;
+                ctx.fillStyle = healthPercent > 0.5 ? '#22c55e' : healthPercent > 0.25 ? '#f59e0b' : '#ef4444';
+                ctx.fillRect(x, y, barWidth * healthPercent, barHeight);
+            }
+            
+            sendEcho() {
+                const now = Date.now();
+                if (now - this.lastEchoTime > this.echoCooldown && this.energy >= 20) {
+                    this.lastEchoTime = now;
+                    this.energy -= 20;
+                    
+                    // Track echo usage for achievements
+                    gameStats.echoUsageCount++;
+                    
+                    // Echo Master achievement after 5 uses  
+                    if (gameStats.echoUsageCount >= 5 && !achievements.echoMaster.unlocked) {
+                        showAchievement('echoMaster', { echoes: 5 });
+                    }
+                    
+                    // Create echo wave effect
+                    this.createEchoWave();
+                    
+                    // Reveal enemies temporarily
+                    enemies.forEach(enemy => {
+                        enemy.revealed = true;
+                        enemy.revealTime = now;
+                    });
+                    
+                    return true;
+                }
+                return false;
+            }
+            
+            createEchoWave() {
+                // Play echo pulse sound
+                audioSystem.playSound('echoPulse');
+                
+                // Create expanding circle particles
+                for (let i = 0; i < 20; i++) {
+                    const angle = (i / 20) * Math.PI * 2;
+                    particles.push(new EchoParticle(this.x, this.y, angle));
+                }
+            }
+            
+            shoot() {
+                const bulletSpeed = 8;
+                const spread = currentWeapon === 'rapid' ? 0.2 : 0;
+                const count = currentWeapon === 'rapid' ? 3 : 1;
+                const damage = currentWeapon === 'heavy' ? 3 : 1;
+                
+                // Play shoot sound
+                audioSystem.playSound('shoot');
+                
+                for (let i = 0; i < count; i++) {
+                    const angle = this.angle + (Math.random() - 0.5) * spread;
+                    bullets.push(new Bullet(
+                        this.x + Math.cos(this.angle) * 25,
+                        this.y + Math.sin(this.angle) * 25,
+                        Math.cos(angle) * bulletSpeed,
+                        Math.sin(angle) * bulletSpeed,
+                        damage,
+                        currentWeapon
+                    ));
+                }
+            }
+        }
+        
+        // Enhanced Enemy Class
+        class Enemy {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.width = 30;
+                this.height = 30;
+                this.health = 3;
+                this.maxHealth = 3;
+                this.speed = 1 + Math.random() * 2;
+                this.angle = Math.random() * Math.PI * 2;
+                this.changeDirectionTime = 0;
+                this.revealed = false;
+                this.revealTime = 0;
+                this.revealDuration = 3000; // 3 seconds
+                this.alpha = 0;
+                this.targetAlpha = 0;
+                
+                // AI behavior
+                this.state = 'patrol'; // patrol, chase, attack
+                this.lastSeen = 0;
+                this.attackCooldown = 0;
+            }
+            
+            update() {
+                const now = Date.now();
+                
+                // Update reveal status
+                if (this.revealed && now - this.revealTime > this.revealDuration) {
+                    this.revealed = false;
+                }
+                
+                // Update alpha for fade in/out effect
+                this.targetAlpha = this.revealed ? 1 : 0.1;
+                this.alpha += (this.targetAlpha - this.alpha) * 0.1;
+                
+                // AI Behavior
+                const distToPlayer = Math.sqrt(Math.pow(this.x - player.x, 2) + Math.pow(this.y - player.y, 2));
+                
+                if (distToPlayer < 150 && this.revealed) {
+                    this.state = 'chase';
+                    this.lastSeen = now;
+                } else if (now - this.lastSeen < 2000) {
+                    this.state = 'chase';
+                } else {
+                    this.state = 'patrol';
+                }
+                
+                // Movement based on state
+                if (this.state === 'chase') {
+                    this.angle = Math.atan2(player.y - this.y, player.x - this.x);
+                    this.speed = 2;
+                } else {
+                    // Random patrol movement
+                    if (now - this.changeDirectionTime > 2000) {
+                        this.angle = Math.random() * Math.PI * 2;
+                        this.changeDirectionTime = now;
+                    }
+                    this.speed = 1;
+                }
+                
+                // Move
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed;
+                
+                // Keep in bounds
+                if (this.x < 0 || this.x > canvas.width) this.angle = Math.PI - this.angle;
+                if (this.y < 0 || this.y > canvas.height) this.angle = -this.angle;
+                
+                this.x = Math.max(0, Math.min(canvas.width, this.x));
+                this.y = Math.max(0, Math.min(canvas.height, this.y));
+                
+                // Attack player if close
+                if (distToPlayer < 40 && now - this.attackCooldown > 1000) {
+                    this.attackPlayer();
+                    this.attackCooldown = now;
+                }
+            }
+            
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                ctx.translate(this.x, this.y);
+                ctx.rotate(this.angle);
+                
+                // Draw alien/robot enemy
+                this.drawAlienEnemy();
+                
+                ctx.restore();
+                
+                // Draw health bar if revealed and damaged
+                if (this.revealed && this.health < this.maxHealth) {
+                    this.drawHealthBar();
+                }
+            }
+            
+            drawAlienEnemy() {
+                const size = this.width;
+                const pulseEffect = Math.sin(Date.now() * 0.008 + this.x * 0.01) * 0.2 + 0.8;
+                
+                // Main body (diamond shape)
+                ctx.beginPath();
+                ctx.moveTo(size * 0.5, 0);
+                ctx.lineTo(0, -size * 0.3);
+                ctx.lineTo(-size * 0.5, 0);
+                ctx.lineTo(0, size * 0.3);
+                ctx.closePath();
+                
+                // Body color based on health
+                const healthPercent = this.health / this.maxHealth;
+                if (healthPercent > 0.6) {
+                    ctx.fillStyle = `rgba(239, 68, 68, ${pulseEffect})`;
+                } else if (healthPercent > 0.3) {
+                    ctx.fillStyle = `rgba(245, 158, 11, ${pulseEffect})`;
+                } else {
+                    ctx.fillStyle = `rgba(156, 163, 175, ${pulseEffect})`;
+                }
+                ctx.fill();
+                
+                // Glowing outline
+                ctx.strokeStyle = `rgba(239, 68, 68, ${this.alpha})`;
+                ctx.lineWidth = 2;
+                ctx.stroke();
+                
+                // Energy core
+                ctx.beginPath();
+                ctx.arc(0, 0, size * 0.15, 0, Math.PI * 2);
+                ctx.fillStyle = `rgba(168, 85, 247, ${pulseEffect})`;
+                ctx.fill();
+                
+                // Spikes/weapons
+                ctx.strokeStyle = `rgba(107, 114, 128, ${this.alpha})`;
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.moveTo(size * 0.3, -size * 0.2);
+                ctx.lineTo(size * 0.6, -size * 0.1);
+                ctx.moveTo(size * 0.3, size * 0.2);
+                ctx.lineTo(size * 0.6, size * 0.1);
+                ctx.stroke();
+                
+                // Eyes/sensors
+                if (this.state === 'chase') {
+                    ctx.beginPath();
+                    ctx.arc(-size * 0.2, -size * 0.1, 2, 0, Math.PI * 2);
+                    ctx.arc(-size * 0.2, size * 0.1, 2, 0, Math.PI * 2);
+                    ctx.fillStyle = `rgba(34, 197, 94, ${this.alpha})`;
+                    ctx.fill();
+                }
+            }
+            
+            drawHealthBar() {
+                const barWidth = 30;
+                const barHeight = 3;
+                const x = this.x - barWidth / 2;
+                const y = this.y - this.height / 2 - 8;
+                
+                ctx.save();
+                ctx.globalAlpha = this.alpha;
+                
+                // Background
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.7)';
+                ctx.fillRect(x, y, barWidth, barHeight);
+                
+                // Health
+                const healthPercent = this.health / this.maxHealth;
+                ctx.fillStyle = healthPercent > 0.5 ? '#ef4444' : '#f59e0b';
+                ctx.fillRect(x, y, barWidth * healthPercent, barHeight);
+                
+                ctx.restore();
+            }
+            
+            attackPlayer() {
+                if (player.health > 0) {
+                    player.health = Math.max(0, player.health - 10);
+                    
+                    // Play player hit sound
+                    audioSystem.playSound('playerHit');
+                    
+                    // Create damage effect
+                    for (let i = 0; i < 5; i++) {
+                        particles.push(new DamageParticle(player.x, player.y));
+                    }
+                }
+            }
+            
+            takeDamage(damage) {
+                this.health -= damage;
+                this.revealed = true;
+                this.revealTime = Date.now();
+                
+                // Play enemy hit sound
+                audioSystem.playSound('enemyHit');
+                
+                // Create hit effect
+                for (let i = 0; i < 3; i++) {
+                    particles.push(new HitParticle(this.x, this.y));
+                }
+                
+                return this.health <= 0;
+            }
+        }
+        
+        // Enhanced Bullet Class
+        class Bullet {
+            constructor(x, y, vx, vy, damage, type) {
+                this.x = x;
+                this.y = y;
+                this.vx = vx;
+                this.vy = vy;
+                this.damage = damage;
+                this.type = type;
+                this.life = 100;
+                this.maxLife = 100;
+                this.size = type === 'heavy' ? 6 : 3;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.life--;
+                
+                // Check bounds
+                if (this.x < 0 || this.x > canvas.width || this.y < 0 || this.y > canvas.height) {
+                    this.life = 0;
+                }
+                
+                // Check collision with enemies
+                for (let i = enemies.length - 1; i >= 0; i--) {
+                    const enemy = enemies[i];
+                    const dist = Math.sqrt(Math.pow(this.x - enemy.x, 2) + Math.pow(this.y - enemy.y, 2));
+                    
+                    if (dist < enemy.width / 2 + this.size) {
+                        if (enemy.takeDamage(this.damage)) {
+                            enemies.splice(i, 1);
+                            
+                            // First kill achievement
+                            if (!achievements.firstKill.unlocked && gameStats.enemiesKilled === 0) {
+                                showAchievement('firstKill');
+                            }
+                            
+                            gameStats.enemiesKilled++;
+                            
+                            // Wallet mode gets bonus points
+                            const baseScore = 100;
+                            const multiplier = gameMode === 'wallet' ? 1.5 : 1.0;
+                            const earnedPoints = Math.floor(baseScore * multiplier);
+                            gameStats.score += earnedPoints;
+                            
+                            // Score milestone achievements
+                            if (gameStats.score >= 500 && !achievements.scoreHunter.unlocked) {
+                                showAchievement('scoreHunter', { score: 500 });
+                            }
+                            
+                            // Show score popup
+                            if (gameMode === 'wallet') {
+                                createScorePopup(enemy.x, enemy.y, `+${earnedPoints} (Wallet Bonus!)`);
+                            } else {
+                                createScorePopup(enemy.x, enemy.y, `+${earnedPoints}`);
+                            }
+                            
+                            gameStats.enemiesRemaining--;
+                        }
+                        this.life = 0;
+                        break;
+                    }
+                }
+            }
+            
+            draw() {
+                const alpha = this.life / this.maxLife;
+                ctx.save();
+                ctx.globalAlpha = alpha;
+                
+                // Draw bullet based on type
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                
+                switch(this.type) {
+                    case 'pulse':
+                        ctx.fillStyle = '#06b6d4';
+                        break;
+                    case 'rapid':
+                        ctx.fillStyle = '#f59e0b';
+                        break;
+                    case 'heavy':
+                        ctx.fillStyle = '#ef4444';
+                        break;
+                }
+                
+                ctx.fill();
+                
+                // Glow effect
+                ctx.shadowBlur = 10;
+                ctx.shadowColor = ctx.fillStyle;
+                ctx.fill();
+                
+                ctx.restore();
+            }
+        }
+        
+        // Particle Classes
+        class EchoParticle {
+            constructor(x, y, angle) {
+                this.x = x;
+                this.y = y;
+                this.angle = angle;
+                this.speed = 3;
+                this.life = 60;
+                this.maxLife = 60;
+                this.distance = 0;
+            }
+            
+            update() {
+                this.x += Math.cos(this.angle) * this.speed;
+                this.y += Math.sin(this.angle) * this.speed;
+                this.distance += this.speed;
+                this.life--;
+            }
+            
+            draw() {
+                const alpha = this.life / this.maxLife;
+                ctx.save();
+                ctx.globalAlpha = alpha;
+                ctx.strokeStyle = '#06b6d4';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+        
+        class HitParticle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 4;
+                this.vy = (Math.random() - 0.5) * 4;
+                this.life = 30;
+                this.maxLife = 30;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vx *= 0.98;
+                this.vy *= 0.98;
+                this.life--;
+            }
+            
+            draw() {
+                const alpha = this.life / this.maxLife;
+                ctx.save();
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = '#ef4444';
+                ctx.fillRect(this.x - 2, this.y - 2, 4, 4);
+                ctx.restore();
+            }
+        }
+        
+        class DamageParticle {
+            constructor(x, y) {
+                this.x = x;
+                this.y = y;
+                this.vx = (Math.random() - 0.5) * 6;
+                this.vy = (Math.random() - 0.5) * 6 - 2;
+                this.life = 40;
+                this.maxLife = 40;
+            }
+            
+            update() {
+                this.x += this.vx;
+                this.y += this.vy;
+                this.vy += 0.2; // gravity
+                this.life--;
+            }
+            
+            draw() {
+                const alpha = this.life / this.maxLife;
+                ctx.save();
+                ctx.globalAlpha = alpha;
+                ctx.fillStyle = '#fbbf24';
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, 3, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+        
+        // Audio System
+        const audioSystem = {
+            context: null,
+            musicEnabled: true, // Aktifkan musik secara default
+            sfxEnabled: true,
+            masterVolume: 0.7,
+            
+            // Audio sources (using Web Audio API for better performance)
+            sounds: {
+                shoot: null,
+                enemyHit: null,
+                playerHit: null,
+                echoPulse: null,
+                levelComplete: null
+            },
+            
+            backgroundMusic: null,
+            musicGain: null,
+            sfxGain: null,
+            masterGain: null,
+            musicNodes: [], // Array untuk menyimpan nodes musik
+            
+            init() {
+                try {
+                    this.context = new (window.AudioContext || window.webkitAudioContext)();
+                    
+                    // Create gain nodes for volume control
+                    this.masterGain = this.context.createGain();
+                    this.musicGain = this.context.createGain();
+                    this.sfxGain = this.context.createGain();
+                    
+                    // Connect gain nodes
+                    this.musicGain.connect(this.masterGain);
+                    this.sfxGain.connect(this.masterGain);
+                    this.masterGain.connect(this.context.destination);
+                    
+                    // Set initial volumes
+                    this.masterGain.gain.value = this.masterVolume;
+                    this.musicGain.gain.value = this.musicEnabled ? 0.4 : 0;
+                    this.sfxGain.gain.value = this.sfxEnabled ? 0.6 : 0;
+                    
+                    // Create procedural sounds
+                    this.createProceduralSounds();
+                    
+                    // Start background music loop
+                    if (this.musicEnabled) {
+                        this.startCyberpunkMusic();
+                    }
+                    
+                } catch (e) {
+                    console.warn('Web Audio API not supported:', e);
+                }
+            },
+            
+            createProceduralSounds() {
+                // Create shoot sound (laser-like)
+                this.sounds.shoot = () => {
+                    if (!this.sfxEnabled || !this.context) return;
+                    
+                    const oscillator = this.context.createOscillator();
+                    const gainNode = this.context.createGain();
+                    const filterNode = this.context.createBiquadFilter();
+                    
+                    oscillator.connect(filterNode);
+                    filterNode.connect(gainNode);
+                    gainNode.connect(this.sfxGain);
+                    
+                    oscillator.frequency.setValueAtTime(800, this.context.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(200, this.context.currentTime + 0.1);
+                    
+                    filterNode.type = 'lowpass';
+                    filterNode.frequency.value = 1000;
+                    
+                    gainNode.gain.setValueAtTime(0.3, this.context.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, this.context.currentTime + 0.1);
+                    
+                    oscillator.start(this.context.currentTime);
+                    oscillator.stop(this.context.currentTime + 0.1);
+                };
+                
+                // Create enemy hit sound
+                this.sounds.enemyHit = () => {
+                    if (!this.sfxEnabled || !this.context) return;
+                    
+                    const oscillator = this.context.createOscillator();
+                    const gainNode = this.context.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.sfxGain);
+                    
+                    oscillator.frequency.setValueAtTime(150, this.context.currentTime);
+                    oscillator.frequency.exponentialRampToValueAtTime(50, this.context.currentTime + 0.3);
+                    
+                    gainNode.gain.setValueAtTime(0.4, this.context.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, this.context.currentTime + 0.3);
+                    
+                    oscillator.start(this.context.currentTime);
+                    oscillator.stop(this.context.currentTime + 0.3);
+                };
+                
+                // Create echo pulse sound
+                this.sounds.echoPulse = () => {
+                    if (!this.sfxEnabled || !this.context) return;
+                    
+                    const oscillator = this.context.createOscillator();
+                    const gainNode = this.context.createGain();
+                    const filterNode = this.context.createBiquadFilter();
+                    
+                    oscillator.connect(filterNode);
+                    filterNode.connect(gainNode);
+                    gainNode.connect(this.sfxGain);
+                    
+                    oscillator.frequency.setValueAtTime(400, this.context.currentTime);
+                    oscillator.frequency.setValueAtTime(600, this.context.currentTime + 0.1);
+                    oscillator.frequency.setValueAtTime(300, this.context.currentTime + 0.2);
+                    
+                    filterNode.type = 'bandpass';
+                    filterNode.frequency.value = 500;
+                    filterNode.Q.value = 2;
+                    
+                    gainNode.gain.setValueAtTime(0.2, this.context.currentTime);
+                    gainNode.gain.linearRampToValueAtTime(0.4, this.context.currentTime + 0.1);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, this.context.currentTime + 0.5);
+                    
+                    oscillator.start(this.context.currentTime);
+                    oscillator.stop(this.context.currentTime + 0.5);
+                };
+                
+                // Create player hit sound
+                this.sounds.playerHit = () => {
+                    if (!this.sfxEnabled || !this.context) return;
+                    
+                    const oscillator = this.context.createOscillator();
+                    const gainNode = this.context.createGain();
+                    
+                    oscillator.connect(gainNode);
+                    gainNode.connect(this.sfxGain);
+                    
+                    oscillator.frequency.setValueAtTime(200, this.context.currentTime);
+                    oscillator.frequency.linearRampToValueAtTime(100, this.context.currentTime + 0.2);
+                    
+                    gainNode.gain.setValueAtTime(0.5, this.context.currentTime);
+                    gainNode.gain.exponentialRampToValueAtTime(0.01, this.context.currentTime + 0.2);
+                    
+                    oscillator.start(this.context.currentTime);
+                    oscillator.stop(this.context.currentTime + 0.2);
+                };
+            },
+            
+            startCyberpunkMusic() {
+                if (!this.musicEnabled || !this.context) return;
+                
+                this.stopMusic(); // Stop any existing music
+                
+                // Create complex cyberpunk ambient music
+                this.createBassDrone();
+                this.createArpeggio();
+                this.createPad();
+                this.createPercussion();
+            },
+            
+            createBassDrone() {
+                const osc1 = this.context.createOscillator();
+                const osc2 = this.context.createOscillator();
+                const gain1 = this.context.createGain();
+                const gain2 = this.context.createGain();
+                const filter = this.context.createBiquadFilter();
+                
+                osc1.connect(gain1);
+                osc2.connect(gain2);
+                gain1.connect(filter);
+                gain2.connect(filter);
+                filter.connect(this.musicGain);
+                
+                // Deep sub bass
+                osc1.frequency.value = 40;
+                osc1.type = 'sawtooth';
+                gain1.gain.value = 0.15;
+                
+                // Detuned bass for thickness
+                osc2.frequency.value = 40.5;
+                osc2.type = 'sawtooth';
+                gain2.gain.value = 0.1;
+                
+                filter.type = 'lowpass';
+                filter.frequency.value = 120;
+                filter.Q.value = 5;
+                
+                osc1.start(this.context.currentTime);
+                osc2.start(this.context.currentTime);
+                
+                this.musicNodes.push({ oscillators: [osc1, osc2], gains: [gain1, gain2], filter });
+            },
+            
+            createArpeggio() {
+                const notes = [220, 261.63, 329.63, 392]; // A, C, E, G
+                let noteIndex = 0;
+                
+                const playNote = () => {
+                    if (!this.musicEnabled) return;
+                    
+                    const osc = this.context.createOscillator();
+                    const gain = this.context.createGain();
+                    const filter = this.context.createBiquadFilter();
+                    
+                    osc.connect(gain);
+                    gain.connect(filter);
+                    filter.connect(this.musicGain);
+                    
+                    osc.frequency.value = notes[noteIndex];
+                    osc.type = 'triangle';
+                    
+                    gain.gain.setValueAtTime(0, this.context.currentTime);
+                    gain.gain.linearRampToValueAtTime(0.08, this.context.currentTime + 0.1);
+                    gain.gain.exponentialRampToValueAtTime(0.001, this.context.currentTime + 1.5);
+                    
+                    filter.type = 'highpass';
+                    filter.frequency.value = 200;
+                    
+                    osc.start(this.context.currentTime);
+                    osc.stop(this.context.currentTime + 1.5);
+                    
+                    noteIndex = (noteIndex + 1) % notes.length;
+                    
+                    setTimeout(playNote, 800);
+                };
+                
+                playNote();
+            },
+            
+            createPad() {
+                const chordNotes = [130.81, 164.81, 196]; // C, E, G
+                
+                chordNotes.forEach((freq, index) => {
+                    const osc = this.context.createOscillator();
+                    const gain = this.context.createGain();
+                    const filter = this.context.createBiquadFilter();
+                    const delay = this.context.createDelay();
+                    const delayGain = this.context.createGain();
+                    
+                    osc.connect(gain);
+                    gain.connect(filter);
+                    filter.connect(delay);
+                    filter.connect(this.musicGain);
+                    delay.connect(delayGain);
+                    delayGain.connect(filter);
+                    
+                    osc.frequency.value = freq;
+                    osc.type = 'sine';
+                    gain.gain.value = 0.04;
+                    
+                    filter.type = 'bandpass';
+                    filter.frequency.value = freq * 2;
+                    filter.Q.value = 2;
+                    
+                    delay.delayTime.value = 0.3;
+                    delayGain.gain.value = 0.2;
+                    
+                    osc.start(this.context.currentTime);
+                    
+                    this.musicNodes.push({ oscillator: osc, gain, filter, delay, delayGain });
+                });
+            },
+            
+            createPercussion() {
+                let beat = 0;
+                
+                const playBeat = () => {
+                    if (!this.musicEnabled) return;
+                    
+                    // Kick drum on beats 1 and 3
+                    if (beat % 4 === 0 || beat % 4 === 2) {
+                        const kick = this.context.createOscillator();
+                        const kickGain = this.context.createGain();
+                        const kickFilter = this.context.createBiquadFilter();
+                        
+                        kick.connect(kickGain);
+                        kickGain.connect(kickFilter);
+                        kickFilter.connect(this.musicGain);
+                        
+                        kick.frequency.setValueAtTime(60, this.context.currentTime);
+                        kick.frequency.exponentialRampToValueAtTime(20, this.context.currentTime + 0.1);
+                        kick.type = 'sine';
+                        
+                        kickGain.gain.setValueAtTime(0.2, this.context.currentTime);
+                        kickGain.gain.exponentialRampToValueAtTime(0.001, this.context.currentTime + 0.3);
+                        
+                        kickFilter.type = 'lowpass';
+                        kickFilter.frequency.value = 100;
+                        
+                        kick.start(this.context.currentTime);
+                        kick.stop(this.context.currentTime + 0.3);
+                    }
+                    
+                    // Hi-hat on off beats
+                    if (beat % 2 === 1) {
+                        const hihat = this.context.createOscillator();
+                        const hihatGain = this.context.createGain();
+                        const hihatFilter = this.context.createBiquadFilter();
+                        
+                        hihat.connect(hihatGain);
+                        hihatGain.connect(hihatFilter);
+                        hihatFilter.connect(this.musicGain);
+                        
+                        hihat.frequency.value = 8000;
+                        hihat.type = 'square';
+                        
+                        hihatGain.gain.setValueAtTime(0.05, this.context.currentTime);
+                        hihatGain.gain.exponentialRampToValueAtTime(0.001, this.context.currentTime + 0.1);
+                        
+                        hihatFilter.type = 'highpass';
+                        hihatFilter.frequency.value = 6000;
+                        
+                        hihat.start(this.context.currentTime);
+                        hihat.stop(this.context.currentTime + 0.1);
+                    }
+                    
+                    beat++;
+                    setTimeout(playBeat, 600); // 100 BPM
+                };
+                
+                playBeat();
+            },
+            
+            stopMusic() {
+                // Stop all music nodes
+                this.musicNodes.forEach(nodeGroup => {
+                    try {
+                        if (nodeGroup.oscillator) {
+                            nodeGroup.oscillator.stop();
+                        }
+                        if (nodeGroup.oscillators) {
+                            nodeGroup.oscillators.forEach(osc => osc.stop());
+                        }
+                    } catch (e) {
+                        // Oscillator might already be stopped
+                    }
+                });
+                this.musicNodes = [];
+            },
+            
+            toggleMusic() {
+                this.musicEnabled = !this.musicEnabled;
+                if (this.musicGain) {
+                    this.musicGain.gain.setValueAtTime(
+                        this.musicEnabled ? 0.4 : 0, 
+                        this.context.currentTime
+                    );
+                }
+                if (this.musicEnabled) {
+                    this.startCyberpunkMusic();
+                } else {
+                    this.stopMusic();
+                }
+            },
+            
+            toggleSFX() {
+                this.sfxEnabled = !this.sfxEnabled;
+                if (this.sfxGain) {
+                    this.sfxGain.gain.setValueAtTime(
+                        this.sfxEnabled ? 0.6 : 0, 
+                        this.context.currentTime
+                    );
+                }
+            },
+            
+            setMasterVolume(volume) {
+                this.masterVolume = volume / 100;
+                if (this.masterGain) {
+                    this.masterGain.gain.setValueAtTime(
+                        this.masterVolume, 
+                        this.context.currentTime
+                    );
+                }
+            },
+            
+            playSound(soundName) {
+                if (this.sounds[soundName]) {
+                    this.sounds[soundName]();
+                }
+            },
+            
+            playAchievementSound() {
+                if (!this.sfxEnabled || !this.context) return;
+                
+                // Create achievement notification sound
+                const osc = this.context.createOscillator();
+                const gain = this.context.createGain();
+                
+                osc.connect(gain);
+                gain.connect(this.sfxGain);
+                
+                osc.frequency.setValueAtTime(523.25, this.context.currentTime); // C5
+                osc.frequency.setValueAtTime(659.25, this.context.currentTime + 0.1); // E5
+                osc.frequency.setValueAtTime(783.99, this.context.currentTime + 0.2); // G5
+                
+                osc.type = 'triangle';
+                
+                gain.gain.setValueAtTime(0.3, this.context.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.001, this.context.currentTime + 0.8);
+                
+                osc.start(this.context.currentTime);
+                osc.stop(this.context.currentTime + 0.8);
+            },
+            
+            playLevelUpSound() {
+                if (!this.sfxEnabled || !this.context) return;
+                
+                // Create epic level up sound
+                const frequencies = [261.63, 329.63, 392, 523.25, 659.25]; // C, E, G, C5, E5
+                
+                frequencies.forEach((freq, index) => {
+                    setTimeout(() => {
+                        const osc = this.context.createOscillator();
+                        const gain = this.context.createGain();
+                        const filter = this.context.createBiquadFilter();
+                        
+                        osc.connect(gain);
+                        gain.connect(filter);
+                        filter.connect(this.sfxGain);
+                        
+                        osc.frequency.value = freq;
+                        osc.type = 'square';
+                        
+                        filter.type = 'lowpass';
+                        filter.frequency.value = freq * 2;
+                        
+                        gain.gain.setValueAtTime(0.4, this.context.currentTime);
+                        gain.gain.exponentialRampToValueAtTime(0.001, this.context.currentTime + 0.5);
+                        
+                        osc.start(this.context.currentTime);
+                        osc.stop(this.context.currentTime + 0.5);
+                    }, index * 100);
+                });
+            }
+        };
+        
+        // Game Functions
+        function initGame() {
+            canvas = document.getElementById('gameCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // Set canvas size
+            resizeCanvas();
+            
+            // Initialize player
+            player = new Player(canvas.width / 2, canvas.height / 2);
+            
+            // Initialize enemies
+            spawnEnemies();
+            
+            // Initialize audio system
+            audioSystem.init();
+            
+            // Setup audio controls
+            setupAudioControls();
+            
+            // Event listeners
+            setupEventListeners();
+            
+            // Start game loop
+            gameLoop();
+        }
+        
+        function setupAudioControls() {
+            // Music toggle
+            const musicToggle = document.getElementById('musicToggle');
+            musicToggle.addEventListener('click', () => {
+                audioSystem.toggleMusic();
+                musicToggle.classList.toggle('active');
+                musicToggle.textContent = audioSystem.musicEnabled ? 'ON' : 'OFF';
+            });
+            
+            // SFX toggle  
+            const sfxToggle = document.getElementById('sfxToggle');
+            sfxToggle.addEventListener('click', () => {
+                audioSystem.toggleSFX();
+                sfxToggle.classList.toggle('active');
+                sfxToggle.textContent = audioSystem.sfxEnabled ? 'ON' : 'OFF';
+            });
+            
+            // Master volume slider
+            const masterVolume = document.getElementById('masterVolume');
+            masterVolume.addEventListener('input', (e) => {
+                audioSystem.setMasterVolume(e.target.value);
+            });
+        }
+        
+        function resizeCanvas() {
+            const container = document.querySelector('.game-canvas-container');
+            const maxWidth = window.innerWidth - 40;
+            const maxHeight = window.innerHeight - 120;
+            
+            const aspectRatio = 4/3;
+            let newWidth = Math.min(800, maxWidth);
+            let newHeight = newWidth / aspectRatio;
+            
+            if (newHeight > maxHeight) {
+                newHeight = maxHeight;
+                newWidth = newHeight * aspectRatio;
+            }
+            
+            canvas.width = newWidth;
+            canvas.height = newHeight;
+        }
+        
+        function spawnEnemies() {
+            enemies = [];
+            const count = Math.min(3 + gameStats.level, 15);
+            gameStats.enemiesRemaining = count;
+            
+            for (let i = 0; i < count; i++) {
+                let x, y;
+                do {
+                    x = Math.random() * (canvas.width - 100) + 50;
+                    y = Math.random() * (canvas.height - 100) + 50;
+                } while (Math.sqrt(Math.pow(x - player.x, 2) + Math.pow(y - player.y, 2)) < 150);
+                
+                const enemy = new Enemy(x, y);
+                enemy.health = Math.min(1 + Math.floor(gameStats.level / 3), 8);
+                enemy.maxHealth = enemy.health;
+                enemies.push(enemy);
+            }
+        }
+        
+        function setupEventListeners() {
+            // Keyboard events
+            document.addEventListener('keydown', (e) => {
+                keys[e.key.toLowerCase()] = true;
+                
+                if (e.code === 'Space') {
+                    e.preventDefault();
+                    if (gameState === 'playing') {
+                        player.sendEcho();
+                    }
+                }
+                
+                // Weapon switching
+                if (e.key >= '1' && e.key <= '3') {
+                    const weapons = ['pulse', 'rapid', 'heavy'];
+                    currentWeapon = weapons[parseInt(e.key) - 1];
+                    updateWeaponUI();
+                }
+            });
+            
+            document.addEventListener('keyup', (e) => {
+                keys[e.key.toLowerCase()] = false;
+            });
+            
+            // Mouse events
+            canvas.addEventListener('mousemove', (e) => {
+                const rect = canvas.getBoundingClientRect();
+                mousePos.x = (e.clientX - rect.left) * (canvas.width / rect.width);
+                mousePos.y = (e.clientY - rect.top) * (canvas.height / rect.height);
+            });
+            
+            canvas.addEventListener('click', (e) => {
+                if (gameState === 'playing') {
+                    player.shoot();
+                }
+            });
+            
+            // Weapon selector
+            document.querySelectorAll('.weapon-btn').forEach(btn => {
+                btn.addEventListener('click', () => {
+                    currentWeapon = btn.dataset.weapon;
+                    updateWeaponUI();
+                });
+            });
+            
+            // Touch Controls
+            setupTouchControls();
+            
+            // Window resize
+            window.addEventListener('resize', resizeCanvas);
+        }
+        
+        // Touch Controls Setup
+        let touchMovement = { x: 0, y: 0 };
+        let touchFiring = false;
+        let touchWeaponIndex = 0;
+        const touchWeapons = ['pulse', 'rapid', 'heavy'];
+        const touchWeaponIcons = ['bi-soundwave', 'bi-lightning', 'bi-circle-fill'];
+        
+        function setupTouchControls() {
+            const joystick = document.getElementById('touchJoystick');
+            const joystickInner = document.getElementById('joystickInner');
+            const fireBtn = document.getElementById('touchFireBtn');
+            const echoBtn = document.getElementById('touchEchoBtn');
+            const weaponBtn = document.getElementById('touchWeaponBtn');
+            
+            let isDragging = false;
+            let joystickCenter = { x: 0, y: 0 };
+            
+            // Joystick Movement
+            joystick.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                isDragging = true;
+                const rect = joystick.getBoundingClientRect();
+                joystickCenter.x = rect.left + rect.width / 2;
+                joystickCenter.y = rect.top + rect.height / 2;
+            });
+            
+            joystick.addEventListener('touchmove', (e) => {
+                e.preventDefault();
+                if (!isDragging) return;
+                
+                const touch = e.touches[0];
+                const deltaX = touch.clientX - joystickCenter.x;
+                const deltaY = touch.clientY - joystickCenter.y;
+                const distance = Math.sqrt(deltaX * deltaX + deltaY * deltaY);
+                const maxDistance = 25;
+                
+                if (distance <= maxDistance) {
+                    joystickInner.style.transform = `translate(-50%, -50%) translate(${deltaX}px, ${deltaY}px)`;
+                    touchMovement.x = deltaX / maxDistance;
+                    touchMovement.y = deltaY / maxDistance;
+                } else {
+                    const angle = Math.atan2(deltaY, deltaX);
+                    const limitedX = Math.cos(angle) * maxDistance;
+                    const limitedY = Math.sin(angle) * maxDistance;
+                    joystickInner.style.transform = `translate(-50%, -50%) translate(${limitedX}px, ${limitedY}px)`;
+                    touchMovement.x = limitedX / maxDistance;
+                    touchMovement.y = limitedY / maxDistance;
+                }
+            });
+            
+            joystick.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                isDragging = false;
+                joystickInner.style.transform = 'translate(-50%, -50%)';
+                touchMovement.x = 0;
+                touchMovement.y = 0;
+            });
+            
+            // Fire Button
+            fireBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                touchFiring = true;
+            });
+            
+            fireBtn.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                touchFiring = false;
+            });
+            
+            // Echo Button
+            echoBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                if (player.energy >= 30) {
+                    createEchoWave();
+                    audioSystem.playSound('echoPulse');
+                }
+            });
+            
+            // Weapon Switch Button
+            weaponBtn.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                touchWeaponIndex = (touchWeaponIndex + 1) % touchWeapons.length;
+                currentWeapon = touchWeapons[touchWeaponIndex];
+                
+                // Update weapon button icon
+                const icon = weaponBtn.querySelector('i');
+                icon.className = `bi ${touchWeaponIcons[touchWeaponIndex]}`;
+                
+                // Update desktop weapon UI if visible
+                updateWeaponUI();
+            });
+            
+            // Prevent default touch behaviors
+            document.addEventListener('touchmove', (e) => {
+                if (e.target.closest('.touch-controls')) {
+                    e.preventDefault();
+                }
+            }, { passive: false });
+        }
+        
+        function updateWeaponUI() {
+            document.querySelectorAll('.weapon-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.weapon === currentWeapon);
+            });
+        }
+        
+        function gameLoop() {
+            update();
+            draw();
+            requestAnimationFrame(gameLoop);
+        }
+        
+        function update() {
+            if (gameState !== 'playing') return;
+            
+            // Update game timer
+            gameTimer += 1/60;
+            
+            // Check survivor achievement (2 minutes = 120 seconds)
+            if (gameTimer >= 120 && !achievements.survivor.unlocked) {
+                showAchievement('survivor', { minutes: 2 });
+            }
+            
+            // Handle touch firing
+            if (touchFiring) {
+                player.shoot();
+                audioSystem.playSound('shoot');
+            }
+            
+            // Update entities
+            player.update();
+            enemies.forEach(enemy => enemy.update());
+            
+            // Update bullets
+            bullets = bullets.filter(bullet => {
+                bullet.update();
+                return bullet.life > 0;
+            });
+            
+            // Update particles
+            particles = particles.filter(particle => {
+                particle.update();
+                return particle.life > 0;
+            });
+            
+            // Update score popups
+            updateScorePopups();
+            
+            // Update UI
+            updateGameUI();
+            
+            // Check win condition
+            if (enemies.length === 0) {
+                levelComplete();
+            }
+            
+            // Check lose condition
+            if (player.health <= 0) {
+                gameOver();
+            }
+        }
+        
+        function draw() {
+            // Clear canvas with space background
+            ctx.fillStyle = '#0f172a';
+            ctx.fillRect(0, 0, canvas.width, canvas.height);
+            
+            // Draw space background effect
+            drawSpaceBackground();
+            
+            if (gameState === 'playing') {
+                // Draw entities
+                player.draw();
+                enemies.forEach(enemy => enemy.draw());
+                bullets.forEach(bullet => bullet.draw());
+                particles.forEach(particle => particle.draw());
+                
+                // Draw score popups
+                drawScorePopups();
+                
+                // Draw echo wave visualization
+                drawEchoVisualization();
+            }
+        }
+        
+        function drawSpaceBackground() {
+            // Animated star field
+            const time = Date.now() * 0.0005;
+            for (let i = 0; i < 50; i++) {
+                const x = (Math.sin(i * 0.1 + time) * 0.5 + 0.5) * canvas.width;
+                const y = (Math.cos(i * 0.13 + time * 0.7) * 0.5 + 0.5) * canvas.height;
+                const alpha = Math.sin(i * 0.2 + time * 2) * 0.5 + 0.5;
+                
+                ctx.save();
+                ctx.globalAlpha = alpha * 0.6;
+                ctx.fillStyle = '#3b82f6';
+                ctx.beginPath();
+                ctx.arc(x, y, 1, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+        
+        function drawEchoVisualization() {
+            // Draw expanding echo circles
+            const now = Date.now();
+            const timeSinceEcho = now - player.lastEchoTime;
+            
+            if (timeSinceEcho < 2000) {
+                const progress = timeSinceEcho / 2000;
+                const radius = progress * 300;
+                const alpha = 1 - progress;
+                
+                ctx.save();
+                ctx.globalAlpha = alpha * 0.3;
+                ctx.strokeStyle = '#06b6d4';
+                ctx.lineWidth = 2;
+                ctx.beginPath();
+                ctx.arc(player.x, player.y, radius, 0, Math.PI * 2);
+                ctx.stroke();
+                
+                ctx.globalAlpha = alpha * 0.1;
+                ctx.beginPath();
+                ctx.arc(player.x, player.y, radius * 0.7, 0, Math.PI * 2);
+                ctx.stroke();
+                ctx.restore();
+            }
+        }
+        
+        function updateGameUI() {
+            // Update stats display
+            document.getElementById('currentLevel').textContent = gameStats.level;
+            document.getElementById('currentScore').textContent = gameStats.score.toLocaleString();
+            document.getElementById('enemiesCount').textContent = gameStats.enemiesRemaining;
+            
+            // Update timer
+            const minutes = Math.floor(gameTimer / 60);
+            const seconds = Math.floor(gameTimer % 60);
+            document.getElementById('gameTimer').textContent = 
+                `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+            
+            // Update health and energy bars
+            document.getElementById('healthBar').style.width = `${player.health}%`;
+            document.getElementById('energyBar').style.width = `${player.energy}%`;
+            
+            gameStats.health = player.health;
+            gameStats.energy = player.energy;
+        }
+        
+        function levelComplete() {
+            gameState = 'levelComplete';
+            gameStats.level++;
+            
+            // Calculate level completion bonus
+            const baseBonus = 500 + (gameStats.level * 100);
+            const multiplier = gameMode === 'wallet' ? 2.0 : 1.0;
+            const levelBonus = Math.floor(baseBonus * multiplier);
+            gameStats.score += levelBonus;
+            
+            // Show level up achievement and modal
+            showAchievement('levelUp', { level: gameStats.level - 1 });
+            
+            setTimeout(() => {
+                showLevelUpModal(gameStats.level - 1);
+            }, 1000);
+        }
+        
+        function nextLevel() {
+            gameState = 'playing';
+            player.health = Math.min(100, player.health + 25); // Restore some health
+            player.energy = 100;
+            spawnEnemies();
+        }
+        
+        function gameOver() {
+            gameState = 'gameOver';
+            
+            setTimeout(() => {
+                let gameOverMessage;
+                if (gameMode === 'wallet') {
+                    gameOverMessage = `🎮 Game Over!\n\n🏆 Final Score: ${gameStats.score}\n📊 Levels Completed: ${gameStats.level - 1}\n💰 Rewards Saved to Wallet!\n\n🔄 Play again?`;
+                } else {
+                    gameOverMessage = `🎮 Game Over!\n\n🏆 Final Score: ${gameStats.score}\n📊 Levels Completed: ${gameStats.level - 1}\n⚠️  Guest Mode - No rewards saved\n💡 Connect wallet to earn rewards!\n\n🔄 Play again?`;
+                }
+                
+                if (confirm(gameOverMessage)) {
+                    restartGame();
+                } else {
+                    returnToMenu();
+                }
+            }, 1000);
+        }
+        
+        function restartGame() {
+            gameStats = {
+                level: 1,
+                score: 0,
+                health: 100,
+                energy: 100,
+                enemiesRemaining: 3,
+                enemiesKilled: 0,
+                echoUsageCount: 0
+            };
+            gameTimer = 0;
+            gameState = 'playing';
+            
+            player = new Player(canvas.width / 2, canvas.height / 2);
+            bullets = [];
+            particles = [];
+            spawnEnemies();
+        }
+        
+        function returnToMenu() {
+            document.getElementById('startScreen').style.display = 'flex';
+            gameState = 'start';
+        }
+        
+        // Wallet Functions
+        async function connectWallet() {
+            // Show loading state
+            const connectBtn = document.getElementById('connectWalletBtn');
+            const originalText = connectBtn.innerHTML;
+            connectBtn.innerHTML = '<i class="bi bi-clock"></i> Connecting...';
+            connectBtn.disabled = true;
+            
+            // Add timeout to prevent stuck state
+            const timeoutId = setTimeout(() => {
+                console.log('Wallet connection timeout');
+                resetConnectButton(connectBtn, originalText);
+                showNotification('Connection timeout. Please try again.', 'warning');
+            }, 15000); // 15 second timeout
+            
+            if (typeof window.ethereum === 'undefined') {
+                clearTimeout(timeoutId);
+                showNotification('MetaMask extension not detected. Install MetaMask to connect your wallet.', 'warning');
+                resetConnectButton(connectBtn, originalText);
+                return;
+            }
+            
+            try {
+                console.log('Requesting MetaMask accounts...');
+                
+                // Request account access with timeout
+                const accounts = await Promise.race([
+                    window.ethereum.request({
+                        method: 'eth_requestAccounts',
+                    }),
+                    new Promise((_, reject) => 
+                        setTimeout(() => reject(new Error('Request timeout')), 10000)
+                    )
+                ]);
+                
+                clearTimeout(timeoutId);
+                
+                if (accounts.length > 0) {
+                    walletConnected = true;
+                    walletAddress = accounts[0];
+                    
+                    // Wallet Warrior achievement
+                    if (!achievements.walletWarrior.unlocked) {
+                        showAchievement('walletWarrior', { address: walletAddress.slice(0, 6) + '...' + walletAddress.slice(-4) });
+                    }
+                    
+                    // Check network
+                    const chainId = await window.ethereum.request({ method: 'eth_chainId' });
+                    console.log('Connected to network:', chainId);
+                    
+                    // Update UI
+                    document.getElementById('walletDisplay').innerHTML = `
+                        <i class="bi bi-wallet2"></i> ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}
+                    `;
+                    
+                    connectBtn.innerHTML = `
+                        <i class="bi bi-check-circle"></i> Connected
+                    `;
+                    connectBtn.style.background = 'var(--success)';
+                    connectBtn.disabled = false;
+                    
+                    // Enable wallet game mode
+                    const walletGameBtn = document.getElementById('startWalletGameBtn');
+                    walletGameBtn.classList.add('enabled');
+                    walletGameBtn.disabled = false;
+                    walletGameBtn.style.opacity = '1';
+                    walletGameBtn.style.cursor = 'pointer';
+                    
+                    // Setup event listeners for account/network changes
+                    if (window.ethereum.on) {
+                        window.ethereum.on('accountsChanged', handleAccountsChanged);
+                        window.ethereum.on('chainChanged', handleChainChanged);
+                    }
+                    
+                    console.log('Wallet connected successfully:', walletAddress);
+                    
+                    // Show success message
+                    showNotification('Wallet connected successfully!', 'success');
+                }
+            } catch (error) {
+                clearTimeout(timeoutId);
+                console.error('Wallet connection failed:', error);
+                
+                let errorMessage = 'Failed to connect wallet. ';
+                if (error.message === 'Request timeout') {
+                    errorMessage = 'Connection timeout. Please check MetaMask and try again.';
+                } else if (error.code === 4001) {
+                    errorMessage += 'Connection request was rejected by user.';
+                } else if (error.code === -32002) {
+                    errorMessage += 'Connection request is already pending. Please check MetaMask popup.';
+                } else if (error.code === -32603) {
+                    errorMessage += 'MetaMask internal error. Please try refreshing the page.';
+                } else {
+                    errorMessage += 'Please make sure MetaMask is installed, unlocked, and try again.';
+                }
+                
+                showNotification(errorMessage, 'warning');
+                resetConnectButton(connectBtn, originalText);
+            }
+        }
+        
+        function resetConnectButton(btn, originalText) {
+            btn.innerHTML = originalText;
+            btn.disabled = false;
+            btn.style.background = '';
+        }
+        
+        function handleAccountsChanged(accounts) {
+            if (accounts.length === 0) {
+                // User disconnected
+                walletConnected = false;
+                walletAddress = '';
+                
+                document.getElementById('walletDisplay').innerHTML = `
+                    <i class="bi bi-wallet2"></i> Not Connected
+                `;
+                
+                document.getElementById('connectWalletBtn').innerHTML = `
+                    <i class="bi bi-wallet2"></i> Connect Wallet
+                `;
+                document.getElementById('connectWalletBtn').style.background = '';
+                
+                // Disable wallet game mode
+                const walletGameBtn = document.getElementById('startWalletGameBtn');
+                walletGameBtn.classList.remove('enabled');
+                walletGameBtn.disabled = true;
+                walletGameBtn.style.opacity = '0.5';
+                walletGameBtn.style.cursor = 'not-allowed';
+                
+                showNotification('Wallet disconnected', 'warning');
+            } else if (accounts[0] !== walletAddress) {
+                // Account changed
+                walletAddress = accounts[0];
+                document.getElementById('walletDisplay').innerHTML = `
+                    <i class="bi bi-wallet2"></i> ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}
+                `;
+                showNotification('Account changed', 'info');
+            }
+        }
+        
+        function handleChainChanged(chainId) {
+            console.log('Network changed to:', chainId);
+            showNotification('Network changed', 'info');
+            // Reload page to reset any network-specific data
+            window.location.reload();
+        }
+        
+        function createScorePopup(x, y, text) {
+            const popup = {
+                x: x,
+                y: y,
+                text: text,
+                life: 60,
+                maxLife: 60,
+                vy: -2
+            };
+            
+            // Add to a score popups array if it doesn't exist
+            if (!window.scorePopups) {
+                window.scorePopups = [];
+            }
+            window.scorePopups.push(popup);
+        }
+        
+        function updateScorePopups() {
+            if (!window.scorePopups) return;
+            
+            for (let i = window.scorePopups.length - 1; i >= 0; i--) {
+                const popup = window.scorePopups[i];
+                popup.y += popup.vy;
+                popup.life--;
+                
+                if (popup.life <= 0) {
+                    window.scorePopups.splice(i, 1);
+                }
+            }
+        }
+        
+        function drawScorePopups() {
+            if (!window.scorePopups) return;
+            
+            ctx.save();
+            ctx.font = '16px Orbitron';
+            ctx.textAlign = 'center';
+            
+            window.scorePopups.forEach(popup => {
+                const alpha = popup.life / popup.maxLife;
+                ctx.globalAlpha = alpha;
+                
+                if (popup.text.includes('Bonus')) {
+                    ctx.fillStyle = '#00ff88';
+                    ctx.strokeStyle = '#ffffff';
+                    ctx.lineWidth = 2;
+                    ctx.strokeText(popup.text, popup.x, popup.y);
+                } else {
+                    ctx.fillStyle = '#ffffff';
+                }
+                
+                ctx.fillText(popup.text, popup.x, popup.y);
+            });
+            
+            ctx.restore();
+        }
+        
+        function showNotification(message, type = 'info') {
+            // Create notification element
+            const notification = document.createElement('div');
+            notification.className = `notification notification-${type}`;
+            notification.innerHTML = `
+                <i class="bi bi-${type === 'success' ? 'check-circle' : type === 'warning' ? 'exclamation-triangle' : 'info-circle'}"></i>
+                <span>${message}</span>
+            `;
+            
+            // Add styles
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: var(--dark-card);
+                border: 1px solid var(--${type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'info'});
+                color: var(--${type === 'success' ? 'success' : type === 'warning' ? 'warning' : 'info'});
+                padding: 1rem 1.5rem;
+                border-radius: 8px;
+                display: flex;
+                align-items: center;
+                gap: 0.5rem;
+                z-index: 10000;
+                animation: slideIn 0.3s ease;
+                box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Remove after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease';
+                setTimeout(() => {
+                    if (notification.parentNode) {
+                        notification.parentNode.removeChild(notification);
+                    }
+                }, 300);
+            }, 3000);
+        }
+        
+        // Achievement System
+        const achievements = {
+            firstKill: { 
+                title: "First Blood", 
+                description: "Eliminated your first enemy", 
+                icon: "🎯", 
+                reward: "+50 XP",
+                unlocked: false 
+            },
+            levelUp: { 
+                title: "Level Master", 
+                description: "Completed level {level}", 
+                icon: "🚀", 
+                reward: "+100 XP + 0.001 ETH",
+                unlocked: false 
+            },
+            scoreHunter: { 
+                title: "Score Hunter", 
+                description: "Reached {score} points", 
+                icon: "⭐", 
+                reward: "+75 XP",
+                unlocked: false 
+            },
+            echoMaster: { 
+                title: "Echo Pulse Master", 
+                description: "Used Echo Pulse 5 times", 
+                icon: "📡", 
+                reward: "+60 XP",
+                unlocked: false 
+            },
+            survivor: { 
+                title: "Cyber Survivor", 
+                description: "Survived for 2 minutes", 
+                icon: "🛡️", 
+                reward: "+200 XP + NFT Badge",
+                unlocked: false 
+            },
+            walletWarrior: { 
+                title: "Wallet Warrior", 
+                description: "Connected wallet and earned rewards", 
+                icon: "💰", 
+                reward: "+150 XP + Exclusive Skin",
+                unlocked: false 
+            }
+        };
+        
+        function showAchievement(achievementKey, customData = {}) {
+            const achievement = achievements[achievementKey];
+            if (!achievement || achievement.unlocked) return;
+            
+            achievement.unlocked = true;
+            
+            // Replace placeholders in description
+            let description = achievement.description;
+            Object.keys(customData).forEach(key => {
+                description = description.replace(`{${key}}`, customData[key]);
+            });
+            
+            const notification = document.createElement('div');
+            notification.className = 'achievement-notification';
+            notification.innerHTML = `
+                <div class="achievement-header">
+                    <div class="achievement-icon">${achievement.icon}</div>
+                    <div>
+                        <div class="achievement-subtitle">Achievement Unlocked!</div>
+                        <div class="achievement-title">${achievement.title}</div>
+                    </div>
+                </div>
+                <div class="achievement-message">${description}</div>
+                <div class="achievement-reward">
+                    <i class="bi bi-gift"></i>
+                    <span>${achievement.reward}</span>
+                </div>
+            `;
+            
+            document.body.appendChild(notification);
+            
+            // Play achievement sound
+            if (audioSystem.sfxEnabled) {
+                audioSystem.playAchievementSound();
+            }
+            
+            // Auto remove after 6 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.5s ease-in';
+                setTimeout(() => {
+                    if (notification.parentElement) {
+                        notification.parentElement.removeChild(notification);
+                    }
+                }, 500);
+            }, 6000);
+        }
+        
+        function showLevelUpModal(level) {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            
+            const modal = document.createElement('div');
+            modal.className = 'achievement-modal';
+            
+            modal.innerHTML = `
+                <div class="achievement-modal-icon">🚀</div>
+                <div class="achievement-modal-title">LEVEL ${level} COMPLETE!</div>
+                <div class="achievement-modal-subtitle">Congratulations, Cyber Warrior!</div>
+                <div class="achievement-modal-message">
+                    You've successfully cleared another level in the cyber battlefield. 
+                    Your skills are evolving!
+                </div>
+                <div class="achievement-modal-rewards">
+                    <div class="achievement-reward-item">
+                        <i class="bi bi-star"></i>
+                        <span>+100 XP Bonus</span>
+                    </div>
+                    ${gameMode === 'wallet' ? `
+                    <div class="achievement-reward-item">
+                        <i class="bi bi-currency-bitcoin"></i>
+                        <span>+0.001 ETH Reward</span>
+                    </div>
+                    <div class="achievement-reward-item">
+                        <i class="bi bi-trophy"></i>
+                        <span>NFT Achievement Badge</span>
+                    </div>
+                    ` : `
+                    <div class="achievement-reward-item" style="border-color: var(--warning); color: var(--warning); background: rgba(255, 170, 0, 0.1);">
+                        <i class="bi bi-info-circle"></i>
+                        <span>Connect wallet to earn crypto rewards!</span>
+                    </div>
+                    `}
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button class="achievement-modal-close" onclick="this.parentElement.parentElement.parentElement.remove(); nextLevel();" style="flex: 1; background: var(--primary);">
+                        <i class="bi bi-arrow-right"></i> Continue Adventure
+                    </button>
+                    <button class="achievement-modal-close" onclick="this.parentElement.parentElement.parentElement.remove(); returnToMenu();" style="flex: 1; background: var(--warning);">
+                        <i class="bi bi-house"></i> Back to Menu
+                    </button>
+                </div>
+            `;
+            
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+            
+            // Play level up sound
+            if (audioSystem.sfxEnabled) {
+                audioSystem.playLevelUpSound();
+            }
+        }
+        
+        function showWalletRequiredModal() {
+            const overlay = document.createElement('div');
+            overlay.className = 'modal-overlay';
+            
+            const modal = document.createElement('div');
+            modal.className = 'achievement-modal';
+            modal.style.borderColor = 'var(--warning)';
+            
+            modal.innerHTML = `
+                <div class="achievement-modal-icon" style="background: var(--warning);">🔒</div>
+                <div class="achievement-modal-title" style="color: var(--warning);">WALLET REQUIRED</div>
+                <div class="achievement-modal-subtitle">Unlock Premium Rewards</div>
+                <div class="achievement-modal-message">
+                    Connect your MetaMask wallet to earn real crypto rewards, 
+                    NFT achievements, and exclusive in-game items!
+                </div>
+                <div class="achievement-modal-rewards">
+                    <div class="achievement-reward-item">
+                        <i class="bi bi-currency-bitcoin"></i>
+                        <span>Earn ETH on Base Network</span>
+                    </div>
+                    <div class="achievement-reward-item">
+                        <i class="bi bi-image"></i>
+                        <span>Collect NFT Badges</span>
+                    </div>
+                    <div class="achievement-reward-item">
+                        <i class="bi bi-gem"></i>
+                        <span>Unlock Exclusive Skins</span>
+                    </div>
+                </div>
+                <div style="display: flex; gap: 10px; justify-content: center;">
+                    <button class="achievement-modal-close" onclick="connectWallet(); this.parentElement.parentElement.parentElement.remove();">
+                        <i class="bi bi-wallet2"></i> Connect Wallet
+                    </button>
+                    <button class="achievement-modal-close" style="background: var(--dark-card); border: 1px solid var(--text-secondary);" onclick="this.parentElement.parentElement.parentElement.remove();">
+                        Continue as Guest
+                    </button>
+                </div>
+            `;
+            
+            overlay.appendChild(modal);
+            document.body.appendChild(overlay);
+        }
+        
+        function startGame(requireWallet = true) {
+            if (requireWallet && !walletConnected) {
+                showWalletRequiredModal();
+                return;
+            }
+            
+            // Set game mode
+            gameMode = requireWallet && walletConnected ? 'wallet' : 'guest';
+            
+            // Update UI based on game mode
+            const gameModeElement = document.getElementById('currentGameMode');
+            const gameModeIcon = document.querySelector('#gameModeIndicator i');
+            
+            if (gameMode === 'wallet') {
+                gameModeElement.textContent = 'Wallet Mode';
+                gameModeElement.style.color = 'var(--success)';
+                gameModeIcon.className = 'bi bi-wallet2 icon';
+                gameModeIcon.style.color = 'var(--success)';
+            } else {
+                gameModeElement.textContent = 'Guest Mode';
+                gameModeElement.style.color = 'var(--warning)';
+                gameModeIcon.className = 'bi bi-person icon';
+                gameModeIcon.style.color = 'var(--warning)';
+            }
+            
+            document.getElementById('startScreen').style.display = 'none';
+            gameState = 'playing';
+            gameTimer = 0;
+            
+            // Initialize game stats
+            gameStats = {
+                level: 1,
+                score: 0,
+                health: 100,
+                energy: 100,
+                enemiesRemaining: 3,
+                enemiesKilled: 0,
+                echoUsageCount: 0
+            };
+            
+            // Initialize player
+            player = new Player(canvas.width / 2, canvas.height / 2);
+            bullets = [];
+            particles = [];
+            
+            // Spawn enemies for first level
+            spawnEnemies();
+            
+            // Reset achievement tracking
+            gameStats.enemiesKilled = 0;
+            gameStats.echoUsageCount = 0;
+            
+            // Resume audio context if suspended (required by browser policies)
+            if (audioSystem.context && audioSystem.context.state === 'suspended') {
+                audioSystem.context.resume();
+            }
+            
+            // Show mode indicator
+            if (gameMode === 'guest') {
+                showNotification('Playing in Guest Mode - No rewards will be saved', 'warning');
+            } else {
+                showNotification('Playing with Wallet - Rewards will be saved!', 'success');
+            }
+        }
+        
+        function showMenu() {
+            // Implementation for pause menu
+            if (gameState === 'playing') {
+                gameState = 'paused';
+                // Show pause menu modal
+            }
+        }
+        
+        // Initialize game when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            initGame();
+            
+            // Check MetaMask availability
+            checkWalletAvailability();
+            
+            // Check if wallet is already connected
+            if (typeof window.ethereum !== 'undefined' && window.ethereum.selectedAddress) {
+                walletAddress = window.ethereum.selectedAddress;
+                walletConnected = true;
+                
+                document.getElementById('walletDisplay').innerHTML = `
+                    <i class="bi bi-wallet2"></i> ${walletAddress.slice(0, 6)}...${walletAddress.slice(-4)}
+                `;
+                
+                // Enable wallet game mode
+                const walletGameBtn = document.getElementById('startWalletGameBtn');
+                walletGameBtn.classList.add('enabled');
+                walletGameBtn.disabled = false;
+                walletGameBtn.style.opacity = '1';
+                walletGameBtn.style.cursor = 'pointer';
+                
+                // Update connect button
+                const connectBtn = document.getElementById('connectWalletBtn');
+                connectBtn.innerHTML = `<i class="bi bi-check-circle"></i> Connected`;
+                connectBtn.style.background = 'var(--success)';
+                
+                showNotification('Wallet already connected!', 'success');
+            }
+        });
+        
+        function checkWalletAvailability() {
+            const connectBtn = document.getElementById('connectWalletBtn');
+            
+            if (typeof window.ethereum === 'undefined') {
+                // MetaMask not installed
+                connectBtn.innerHTML = `
+                    <i class="bi bi-download"></i> Install MetaMask
+                `;
+                connectBtn.style.background = 'rgba(255, 193, 7, 0.8)';
+                connectBtn.onclick = function() {
+                    if (confirm('MetaMask is required to connect your wallet.\n\nWould you like to visit MetaMask.io to install it?')) {
+                        window.open('https://metamask.io/download/', '_blank');
+                    }
+                };
+                
+                showNotification('MetaMask extension not detected. Install MetaMask to connect your wallet.', 'warning');
+            } else {
+                // MetaMask available
+                console.log('MetaMask detected and available');
+            }
+        }
+    </script>
+</body>
+</html>

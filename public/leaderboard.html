@@ -1,0 +1,913 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo Pulse - Leaderboard</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/Logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/Logo.png">
+    <link rel="shortcut icon" href="assets/Logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/Logo.png">
+    <meta name="msapplication-TileImage" content="assets/Logo.png">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-blue: #0ea5e9;
+            --primary-purple: #8b5cf6;
+            --primary-cyan: #06b6d4;
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --dark-light: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --gradient-main: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+            --gradient-secondary: linear-gradient(135deg, #06b6d4, #3b82f6);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --gold: #ffd700;
+            --silver: #c0c0c0;
+            --bronze: #cd7f32;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+        }
+        
+        .nav-brand {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary-blue);
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            padding: 2rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Header */
+        .leaderboard-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+        
+        .page-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .page-subtitle {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        /* Filters */
+        .filters {
+            display: flex;
+            gap: 1rem;
+            justify-content: center;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .filter-btn {
+            padding: 0.75rem 1.5rem;
+            background: var(--dark-card);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            color: var(--text-secondary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-weight: 600;
+        }
+        
+        .filter-btn:hover {
+            border-color: var(--primary-blue);
+            color: var(--primary-blue);
+        }
+        
+        .filter-btn.active {
+            background: var(--gradient-main);
+            border-color: transparent;
+            color: white;
+        }
+        
+        /* Podium */
+        .podium-section {
+            margin-bottom: 4rem;
+        }
+        
+        .podium {
+            display: flex;
+            justify-content: center;
+            align-items: end;
+            gap: 2rem;
+            margin-bottom: 3rem;
+            flex-wrap: wrap;
+        }
+        
+        .podium-position {
+            text-align: center;
+            padding: 2rem;
+            border-radius: 12px;
+            border: 2px solid;
+            background: var(--dark-card);
+            transition: all 0.3s ease;
+            min-width: 200px;
+        }
+        
+        .podium-position:hover {
+            transform: translateY(-5px);
+        }
+        
+        .podium-1st {
+            border-color: var(--gold);
+            order: 2;
+        }
+        
+        .podium-2nd {
+            border-color: var(--silver);
+            order: 1;
+            transform: scale(0.9);
+        }
+        
+        .podium-3rd {
+            border-color: var(--bronze);
+            order: 3;
+            transform: scale(0.8);
+        }
+        
+        .podium-rank {
+            font-family: 'Orbitron', monospace;
+            font-size: 3rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+        }
+        
+        .podium-1st .podium-rank { color: var(--gold); }
+        .podium-2nd .podium-rank { color: var(--silver); }
+        .podium-3rd .podium-rank { color: var(--bronze); }
+        
+        .podium-avatar {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+        
+        .podium-1st .podium-avatar { background: linear-gradient(135deg, var(--gold), #ff6b35); }
+        .podium-2nd .podium-avatar { background: linear-gradient(135deg, var(--silver), var(--text-muted)); }
+        .podium-3rd .podium-avatar { background: linear-gradient(135deg, var(--bronze), #8b4513); }
+        
+        .podium-name {
+            font-weight: 700;
+            font-size: 1.25rem;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .podium-score {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--primary-blue);
+        }
+        
+        .podium-details {
+            margin-top: 1rem;
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+        
+        /* Leaderboard Table */
+        .leaderboard-table {
+            background: var(--dark-card);
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .table-header {
+            background: rgba(59, 130, 246, 0.2);
+            padding: 1rem 2rem;
+            display: grid;
+            grid-template-columns: auto 1fr auto auto auto;
+            gap: 2rem;
+            align-items: center;
+            font-weight: 700;
+            color: var(--text-primary);
+        }
+        
+        .table-row {
+            padding: 1rem 2rem;
+            display: grid;
+            grid-template-columns: auto 1fr auto auto auto;
+            gap: 2rem;
+            align-items: center;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.1);
+            transition: all 0.3s ease;
+        }
+        
+        .table-row:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+        
+        .table-row:last-child {
+            border-bottom: none;
+        }
+        
+        .rank-number {
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 1.25rem;
+            width: 40px;
+            text-align: center;
+        }
+        
+        .rank-4 { color: var(--primary-blue); }
+        .rank-5 { color: var(--primary-purple); }
+        .rank-top-10 { color: var(--success); }
+        .rank-top-50 { color: var(--warning); }
+        .rank-other { color: var(--text-muted); }
+        
+        .player-info {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+        
+        .player-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--gradient-secondary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-weight: 700;
+        }
+        
+        .player-details {
+            flex: 1;
+        }
+        
+        .player-name {
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+        
+        .player-level {
+            font-size: 0.875rem;
+            color: var(--text-muted);
+        }
+        
+        .player-score {
+            font-family: 'Orbitron', monospace;
+            font-weight: 700;
+            font-size: 1.1rem;
+            color: var(--primary-blue);
+        }
+        
+        .player-level-badge {
+            background: rgba(34, 197, 94, 0.2);
+            color: var(--success);
+            padding: 0.25rem 0.75rem;
+            border-radius: 12px;
+            font-size: 0.875rem;
+            font-weight: 600;
+        }
+        
+        .player-rewards {
+            color: var(--warning);
+            font-weight: 600;
+        }
+        
+        /* Stats Section */
+        .stats-section {
+            margin-top: 4rem;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--dark-card);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .stat-card:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+        
+        .stat-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-main);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .stat-number {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--primary-blue);
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+        
+        /* Your Rank Card */
+        .your-rank-card {
+            background: var(--gradient-main);
+            border-radius: 12px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            text-align: center;
+            color: white;
+        }
+        
+        .your-rank-title {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+        
+        .your-rank-details {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+        
+        .your-rank-stat {
+            text-align: center;
+        }
+        
+        .your-rank-number {
+            font-family: 'Orbitron', monospace;
+            font-size: 2rem;
+            font-weight: 900;
+            margin-bottom: 0.25rem;
+        }
+        
+        .your-rank-label {
+            font-size: 0.875rem;
+            opacity: 0.9;
+        }
+        
+        /* Loading State */
+        .loading {
+            text-align: center;
+            padding: 4rem 2rem;
+            color: var(--text-muted);
+        }
+        
+        .spinner {
+            width: 40px;
+            height: 40px;
+            border: 3px solid rgba(59, 130, 246, 0.3);
+            border-top: 3px solid var(--primary-blue);
+            border-radius: 50%;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 1rem;
+        }
+        
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .main-content {
+                padding: 1rem;
+            }
+            
+            .page-title {
+                font-size: 2rem;
+            }
+            
+            .podium {
+                flex-direction: column;
+                align-items: center;
+            }
+            
+            .podium-position {
+                order: initial !important;
+                transform: none !important;
+                min-width: auto;
+                width: 100%;
+                max-width: 300px;
+            }
+            
+            .table-header,
+            .table-row {
+                grid-template-columns: auto 1fr auto;
+                gap: 1rem;
+                padding: 1rem;
+            }
+            
+            .player-level-badge,
+            .player-rewards {
+                display: none;
+            }
+            
+            .filters {
+                justify-content: stretch;
+            }
+            
+            .filter-btn {
+                flex: 1;
+                text-align: center;
+            }
+        }
+        
+        /* Floating particles animation */
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            animation: float-particle 20s infinite linear;
+        }
+        
+        @keyframes float-particle {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Particles -->
+    <div class="floating-particles" id="particles"></div>
+    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="landing.html" class="nav-brand">
+            <i class="bi bi-soundwave"></i> Echo Pulse
+        </a>
+        <ul class="nav-links">
+            <li><a href="landing.html">Home</a></li>
+            <li><a href="new-game.html">Play Game</a></li>
+            <li><a href="docs.html">Documentation</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="leaderboard.html" class="active">Leaderboard</a></li>
+        </ul>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Header -->
+        <div class="leaderboard-header">
+            <h1 class="page-title">Global Leaderboard</h1>
+            <p class="page-subtitle">Compete with the best Echo Pulse players worldwide and climb the ranks</p>
+        </div>
+        
+        <!-- Your Rank Card -->
+        <div class="your-rank-card" id="yourRankCard" style="display: none;">
+            <div class="your-rank-title">
+                <i class="bi bi-person-circle"></i> Your Current Rank
+            </div>
+            <div class="your-rank-details">
+                <div class="your-rank-stat">
+                    <div class="your-rank-number" id="yourRank">#47</div>
+                    <div class="your-rank-label">Global Rank</div>
+                </div>
+                <div class="your-rank-stat">
+                    <div class="your-rank-number" id="yourScore">125,420</div>
+                    <div class="your-rank-label">Best Score</div>
+                </div>
+                <div class="your-rank-stat">
+                    <div class="your-rank-number" id="yourLevel">15</div>
+                    <div class="your-rank-label">Level</div>
+                </div>
+                <div class="your-rank-stat">
+                    <div class="your-rank-number" id="yourRewards">$156</div>
+                    <div class="your-rank-label">Total Rewards</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Filters -->
+        <div class="filters">
+            <button class="filter-btn active" data-filter="all-time">All Time</button>
+            <button class="filter-btn" data-filter="weekly">This Week</button>
+            <button class="filter-btn" data-filter="monthly">This Month</button>
+            <button class="filter-btn" data-filter="daily">Today</button>
+        </div>
+        
+        <!-- Podium Section -->
+        <div class="podium-section">
+            <div class="podium">
+                <div class="podium-position podium-1st">
+                    <div class="podium-rank">1</div>
+                    <div class="podium-avatar">
+                        <i class="bi bi-crown"></i>
+                    </div>
+                    <div class="podium-name">CyberWarrior</div>
+                    <div class="podium-score">342,850</div>
+                    <div class="podium-details">Level 28 • $1,250 earned</div>
+                </div>
+                
+                <div class="podium-position podium-2nd">
+                    <div class="podium-rank">2</div>
+                    <div class="podium-avatar">
+                        <i class="bi bi-trophy"></i>
+                    </div>
+                    <div class="podium-name">EchoMaster</div>
+                    <div class="podium-score">289,170</div>
+                    <div class="podium-details">Level 24 • $890 earned</div>
+                </div>
+                
+                <div class="podium-position podium-3rd">
+                    <div class="podium-rank">3</div>
+                    <div class="podium-avatar">
+                        <i class="bi bi-award"></i>
+                    </div>
+                    <div class="podium-name">ShadowHunter</div>
+                    <div class="podium-score">245,680</div>
+                    <div class="podium-details">Level 22 • $670 earned</div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Leaderboard Table -->
+        <div class="leaderboard-table">
+            <div class="table-header">
+                <div>Rank</div>
+                <div>Player</div>
+                <div>Score</div>
+                <div class="desktop-only">Level</div>
+                <div class="desktop-only">Rewards</div>
+            </div>
+            
+            <div id="leaderboardRows">
+                <!-- Loading State -->
+                <div class="loading" id="loadingState">
+                    <div class="spinner"></div>
+                    <p>Loading leaderboard data...</p>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Stats Section -->
+        <div class="stats-section">
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-people"></i>
+                </div>
+                <div class="stat-number">12,547</div>
+                <div class="stat-label">Total Players</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-currency-dollar"></i>
+                </div>
+                <div class="stat-number">$127K</div>
+                <div class="stat-label">Rewards Distributed</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-controller"></i>
+                </div>
+                <div class="stat-number">2.8M</div>
+                <div class="stat-label">Games Played</div>
+            </div>
+            
+            <div class="stat-card">
+                <div class="stat-icon">
+                    <i class="bi bi-trophy"></i>
+                </div>
+                <div class="stat-number">342,850</div>
+                <div class="stat-label">Highest Score</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Sample leaderboard data
+        const leaderboardData = {
+            'all-time': [
+                { rank: 4, name: 'QuantumGamer', score: 198420, level: 19, rewards: 520, avatar: 'QG' },
+                { rank: 5, name: 'NeonNinja', score: 186340, level: 18, rewards: 465, avatar: 'NN' },
+                { rank: 6, name: 'PulseRider', score: 174890, level: 17, rewards: 410, avatar: 'PR' },
+                { rank: 7, name: 'VoidSeeker', score: 162750, level: 16, rewards: 380, avatar: 'VS' },
+                { rank: 8, name: 'DataGhost', score: 151230, level: 16, rewards: 350, avatar: 'DG' },
+                { rank: 9, name: 'ByteHunter', score: 139580, level: 15, rewards: 320, avatar: 'BH' },
+                { rank: 10, name: 'CodeWarrior', score: 128940, level: 14, rewards: 295, avatar: 'CW' },
+                { rank: 11, name: 'TechSamurai', score: 118650, level: 14, rewards: 270, avatar: 'TS' },
+                { rank: 12, name: 'PixelPhantom', score: 108420, level: 13, rewards: 245, avatar: 'PP' },
+                { rank: 13, name: 'AlgorithmAce', score: 98750, level: 12, rewards: 220, avatar: 'AA' },
+                { rank: 14, name: 'CyberSage', score: 89340, level: 12, rewards: 195, avatar: 'CS' },
+                { rank: 15, name: 'DigitalDragon', score: 80120, level: 11, rewards: 175, avatar: 'DD' }
+            ],
+            'weekly': [
+                { rank: 4, name: 'NewWeekKing', score: 45680, level: 8, rewards: 85, avatar: 'NK' },
+                { rank: 5, name: 'WeeklyWarrior', score: 42350, level: 7, rewards: 78, avatar: 'WW' },
+                { rank: 6, name: 'SprintMaster', score: 39420, level: 7, rewards: 72, avatar: 'SM' },
+                { rank: 7, name: 'QuickDraw', score: 36890, level: 6, rewards: 65, avatar: 'QD' },
+                { rank: 8, name: 'RapidFire', score: 34250, level: 6, rewards: 58, avatar: 'RF' },
+                { rank: 9, name: 'SpeedDemon', score: 31680, level: 5, rewards: 52, avatar: 'SD' },
+                { rank: 10, name: 'TurboPlayer', score: 29140, level: 5, rewards: 45, avatar: 'TP' }
+            ],
+            'monthly': [
+                { rank: 4, name: 'MonthChamp', score: 89450, level: 12, rewards: 165, avatar: 'MC' },
+                { rank: 5, name: 'CalendarKing', score: 85720, level: 11, rewards: 158, avatar: 'CK' },
+                { rank: 6, name: 'MonthlyMaster', score: 82140, level: 11, rewards: 150, avatar: 'MM' },
+                { rank: 7, name: 'TimeKeeper', score: 78650, level: 10, rewards: 142, avatar: 'TK' },
+                { rank: 8, name: 'PeriodPro', score: 75280, level: 10, rewards: 135, avatar: 'PP' }
+            ],
+            'daily': [
+                { rank: 4, name: 'DailyDominator', score: 12850, level: 3, rewards: 18, avatar: 'DD' },
+                { rank: 5, name: 'TodaysTitan', score: 11940, level: 3, rewards: 16, avatar: 'TT' },
+                { rank: 6, name: 'DayRunner', score: 10780, level: 2, rewards: 14, avatar: 'DR' },
+                { rank: 7, name: 'HourHero', score: 9650, level: 2, rewards: 12, avatar: 'HH' }
+            ]
+        };
+        
+        // Get rank class based on position
+        function getRankClass(rank) {
+            if (rank === 4) return 'rank-4';
+            if (rank === 5) return 'rank-5';
+            if (rank <= 10) return 'rank-top-10';
+            if (rank <= 50) return 'rank-top-50';
+            return 'rank-other';
+        }
+        
+        // Generate avatar colors
+        function getAvatarColor(index) {
+            const colors = [
+                'linear-gradient(135deg, #f59e0b, #f97316)',
+                'linear-gradient(135deg, #10b981, #059669)',
+                'linear-gradient(135deg, #8b5cf6, #7c3aed)',
+                'linear-gradient(135deg, #06b6d4, #0891b2)',
+                'linear-gradient(135deg, #ef4444, #dc2626)',
+                'linear-gradient(135deg, #6366f1, #4f46e5)'
+            ];
+            return colors[index % colors.length];
+        }
+        
+        // Render leaderboard rows
+        function renderLeaderboard(filter = 'all-time') {
+            const container = document.getElementById('leaderboardRows');
+            const data = leaderboardData[filter] || leaderboardData['all-time'];
+            
+            // Show loading state
+            container.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Loading ${filter} leaderboard...</p>
+                </div>
+            `;
+            
+            // Simulate loading delay
+            setTimeout(() => {
+                container.innerHTML = data.map((player, index) => `
+                    <div class="table-row">
+                        <div class="rank-number ${getRankClass(player.rank)}">${player.rank}</div>
+                        <div class="player-info">
+                            <div class="player-avatar" style="background: ${getAvatarColor(index)}">
+                                ${player.avatar}
+                            </div>
+                            <div class="player-details">
+                                <div class="player-name">${player.name}</div>
+                                <div class="player-level">Level ${player.level}</div>
+                            </div>
+                        </div>
+                        <div class="player-score">${player.score.toLocaleString()}</div>
+                        <div class="player-level-badge desktop-only">LV ${player.level}</div>
+                        <div class="player-rewards desktop-only">$${player.rewards}</div>
+                    </div>
+                `).join('');
+            }, 800);
+        }
+        
+        // Filter functionality
+        function setupFilters() {
+            const filterBtns = document.querySelectorAll('.filter-btn');
+            
+            filterBtns.forEach(btn => {
+                btn.addEventListener('click', () => {
+                    // Remove active class from all buttons
+                    filterBtns.forEach(b => b.classList.remove('active'));
+                    
+                    // Add active class to clicked button
+                    btn.classList.add('active');
+                    
+                    // Render leaderboard with selected filter
+                    const filter = btn.dataset.filter;
+                    renderLeaderboard(filter);
+                });
+            });
+        }
+        
+        // Check wallet connection and show user rank
+        async function checkWalletAndShowRank() {
+            if (typeof window.ethereum !== 'undefined' && window.ethereum.selectedAddress) {
+                // Simulate user data (in real app, fetch from blockchain/database)
+                const userRankCard = document.getElementById('yourRankCard');
+                userRankCard.style.display = 'block';
+                
+                // Animate numbers counting up
+                animateNumber('yourRank', 47, '#');
+                animateNumber('yourScore', 125420);
+                animateNumber('yourLevel', 15);
+                animateNumber('yourRewards', 156, '$');
+            }
+        }
+        
+        // Animate number counting
+        function animateNumber(elementId, targetValue, prefix = '') {
+            const element = document.getElementById(elementId);
+            const duration = 2000;
+            const startTime = Date.now();
+            const startValue = 0;
+            
+            function updateNumber() {
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(elapsed / duration, 1);
+                
+                // Easing function
+                const easeOut = 1 - Math.pow(1 - progress, 3);
+                const currentValue = Math.floor(startValue + (targetValue - startValue) * easeOut);
+                
+                element.textContent = prefix + currentValue.toLocaleString();
+                
+                if (progress < 1) {
+                    requestAnimationFrame(updateNumber);
+                }
+            }
+            
+            updateNumber();
+        }
+        
+        // Floating particles animation
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 20;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+        
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            setupFilters();
+            renderLeaderboard();
+            checkWalletAndShowRank();
+            
+            // Add hover effects to podium
+            const podiumPositions = document.querySelectorAll('.podium-position');
+            podiumPositions.forEach(position => {
+                position.addEventListener('mouseenter', () => {
+                    position.style.transform += ' scale(1.05)';
+                });
+                
+                position.addEventListener('mouseleave', () => {
+                    const baseTransform = position.classList.contains('podium-2nd') ? 'scale(0.9)' :
+                                        position.classList.contains('podium-3rd') ? 'scale(0.8)' : 'scale(1)';
+                    position.style.transform = baseTransform;
+                });
+            });
+        });
+        
+        // Auto-refresh leaderboard every 30 seconds
+        setInterval(() => {
+            const activeFilter = document.querySelector('.filter-btn.active').dataset.filter;
+            renderLeaderboard(activeFilter);
+        }, 30000);
+    </script>
+</body>
+</html>

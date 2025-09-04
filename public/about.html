@@ -1,0 +1,934 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo Pulse - About</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/Logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/Logo.png">
+    <link rel="shortcut icon" href="assets/Logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/Logo.png">
+    <meta name="msapplication-TileImage" content="assets/Logo.png">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-blue: #0ea5e9;
+            --primary-purple: #8b5cf6;
+            --primary-cyan: #06b6d4;
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --dark-light: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --gradient-main: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+            --gradient-secondary: linear-gradient(135deg, #06b6d4, #3b82f6);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+        }
+        
+        .nav-brand {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary-blue);
+        }
+        
+        /* Hero Section */
+        .hero {
+            margin-top: 80px;
+            padding: 4rem 2rem;
+            text-align: center;
+            background: radial-gradient(ellipse at center, rgba(59, 130, 246, 0.1) 0%, transparent 70%);
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            position: relative;
+            z-index: 10;
+        }
+        
+        .hero h1 {
+            font-family: 'Orbitron', monospace;
+            font-size: 3.5rem;
+            font-weight: 900;
+            margin-bottom: 1rem;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        /* Story Section */
+        .story-section {
+            padding: 4rem 2rem;
+            background: var(--dark-card);
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .section-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 3rem;
+            background: var(--gradient-secondary);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .story-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+        
+        .story-text h3 {
+            font-size: 1.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--primary-blue);
+        }
+        
+        .story-text p {
+            margin-bottom: 1.5rem;
+            color: var(--text-secondary);
+            font-size: 1.1rem;
+        }
+        
+        .story-visual {
+            background: var(--dark-bg);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .robot-display {
+            width: 100px;
+            height: 100px;
+            margin: 0 auto 1rem;
+            position: relative;
+            animation: float 3s ease-in-out infinite;
+        }
+        
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+        
+        /* Team Section */
+        .team-section {
+            padding: 4rem 2rem;
+        }
+        
+        .team-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .team-card {
+            background: var(--dark-card);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .team-card:hover {
+            transform: translateY(-5px);
+            border-color: var(--primary-blue);
+            box-shadow: 0 10px 30px rgba(59, 130, 246, 0.3);
+        }
+        
+        .team-avatar {
+            width: 80px;
+            height: 80px;
+            background: var(--gradient-main);
+            border-radius: 50%;
+            margin: 0 auto 1rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            color: white;
+        }
+        
+        .team-card h4 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .team-role {
+            color: var(--primary-blue);
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+        
+        .team-card p {
+            color: var(--text-secondary);
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+        }
+        
+        .social-links {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+        }
+        
+        .social-links a {
+            color: var(--text-muted);
+            font-size: 1.2rem;
+            transition: color 0.3s ease;
+        }
+        
+        .social-links a:hover {
+            color: var(--primary-blue);
+        }
+        
+        /* Technology Section */
+        .tech-section {
+            padding: 4rem 2rem;
+            background: var(--dark-card);
+        }
+        
+        .tech-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .tech-card {
+            background: var(--dark-bg);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+        
+        .tech-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: var(--gradient-main);
+        }
+        
+        .tech-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-secondary);
+            border-radius: 12px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .tech-card h4 {
+            font-size: 1.25rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+            color: var(--text-primary);
+        }
+        
+        .tech-card p {
+            color: var(--text-secondary);
+            margin-bottom: 1rem;
+        }
+        
+        .tech-features {
+            list-style: none;
+        }
+        
+        .tech-features li {
+            padding: 0.25rem 0;
+            color: var(--text-secondary);
+            position: relative;
+            padding-left: 1.5rem;
+        }
+        
+        .tech-features li::before {
+            content: '→';
+            position: absolute;
+            left: 0;
+            color: var(--primary-cyan);
+            font-weight: bold;
+        }
+        
+        /* Mission Section */
+        .mission-section {
+            padding: 4rem 2rem;
+        }
+        
+        .mission-content {
+            max-width: 800px;
+            margin: 0 auto;
+            text-align: center;
+        }
+        
+        .mission-content h3 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            color: var(--primary-blue);
+        }
+        
+        .mission-content p {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .stat-card {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(59, 130, 246, 0.1);
+            border-radius: 12px;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .stat-number {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            font-weight: 900;
+            color: var(--primary-blue);
+            display: block;
+            margin-bottom: 0.5rem;
+        }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+        }
+        
+        /* Contact Section */
+        .contact-section {
+            padding: 4rem 2rem;
+            background: var(--dark-card);
+        }
+        
+        .contact-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            margin-top: 3rem;
+        }
+        
+        .contact-card {
+            background: var(--dark-bg);
+            border: 1px solid rgba(59, 130, 246, 0.2);
+            border-radius: 12px;
+            padding: 2rem;
+            text-align: center;
+            transition: all 0.3s ease;
+        }
+        
+        .contact-card:hover {
+            border-color: var(--primary-blue);
+            transform: translateY(-2px);
+        }
+        
+        .contact-icon {
+            width: 60px;
+            height: 60px;
+            background: var(--gradient-main);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1rem;
+            font-size: 1.5rem;
+            color: white;
+        }
+        
+        .contact-card h4 {
+            font-size: 1.1rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            color: var(--text-primary);
+        }
+        
+        .contact-card a {
+            color: var(--primary-blue);
+            text-decoration: none;
+            font-weight: 600;
+        }
+        
+        .contact-card a:hover {
+            color: var(--primary-cyan);
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-main);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: var(--dark-bg);
+            color: var(--text-secondary);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .hero p {
+                font-size: 1rem;
+            }
+            
+            .story-grid {
+                grid-template-columns: 1fr;
+                gap: 2rem;
+            }
+            
+            .section-title {
+                font-size: 2rem;
+            }
+            
+            .team-grid,
+            .tech-grid,
+            .contact-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        /* Floating particles animation */
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            animation: float-particle 20s infinite linear;
+        }
+        
+        @keyframes float-particle {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Particles -->
+    <div class="floating-particles" id="particles"></div>
+    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="landing.html" class="nav-brand">
+            <i class="bi bi-soundwave"></i> Echo Pulse
+        </a>
+        <ul class="nav-links">
+            <li><a href="landing.html">Home</a></li>
+            <li><a href="new-game.html">Play Game</a></li>
+            <li><a href="docs.html">Documentation</a></li>
+            <li><a href="about.html" class="active">About</a></li>
+            <li><a href="leaderboard.html">Leaderboard</a></li>
+        </ul>
+    </nav>
+    
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content">
+            <h1>About Echo Pulse</h1>
+            <p>Discover the story behind the revolutionary Web3 gaming experience that's changing how we think about invisible warfare and blockchain integration.</p>
+        </div>
+    </section>
+    
+    <!-- Story Section -->
+    <section class="story-section">
+        <div class="container">
+            <h2 class="section-title">The Echo Pulse Story</h2>
+            <div class="story-grid">
+                <div class="story-text">
+                    <h3>The Invisible Threat</h3>
+                    <p>In the year 2157, humanity discovered that we were not alone. Alien entities had been living among us for decades, completely invisible to the human eye and most conventional detection methods.</p>
+                    
+                    <p>These beings weren't necessarily hostile, but their hidden presence created fear and uncertainty. Traditional military equipment was useless against enemies that couldn't be seen.</p>
+                    
+                    <p>The breakthrough came when Dr. Elena Vasquez developed the Echo Pulse Detection System - a revolutionary technology that could reveal invisible entities using advanced sound wave analysis.</p>
+                </div>
+                
+                <div class="story-visual">
+                    <div class="robot-display">
+                        <canvas id="robotCanvas" width="100" height="100"></canvas>
+                    </div>
+                    <h4 style="color: var(--primary-cyan); margin-bottom: 1rem;">MK-VII Combat Robot</h4>
+                    <p style="color: var(--text-muted); font-size: 0.9rem;">Advanced cyberpunk warfare unit equipped with Echo Pulse technology</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Team Section -->
+    <section class="team-section">
+        <div class="container">
+            <h2 class="section-title">Meet the Team</h2>
+            <div class="team-grid">
+                <div class="team-card">
+                    <div class="team-avatar">
+                        <i class="bi bi-code-slash"></i>
+                    </div>
+                    <h4>Arion Kade</h4>
+                    <div class="team-role">Lead Developer</div>
+                    <p>Full-stack developer specializing in Web3 integration and game mechanics. 8 years of experience in blockchain development.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="bi bi-github"></i></a>
+                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                        <a href="#"><i class="bi bi-twitter"></i></a>
+                    </div>
+                </div>
+                
+                <div class="team-card">
+                    <div class="team-avatar">
+                        <i class="bi bi-palette"></i>
+                    </div>
+                    <h4>Nexus Varen</h4>
+                    <div class="team-role">Game Designer</div>
+                    <p>Creative director with expertise in cyberpunk aesthetics and user experience design. Former AAA game studio designer.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="bi bi-behance"></i></a>
+                        <a href="#"><i class="bi bi-dribbble"></i></a>
+                        <a href="#"><i class="bi bi-instagram"></i></a>
+                    </div>
+                </div>
+                
+                <div class="team-card">
+                    <div class="team-avatar">
+                        <i class="bi bi-cpu"></i>
+                    </div>
+                    <h4>Kael Drax</h4>
+                    <div class="team-role">Blockchain Architect</div>
+                    <p>PhD in Computer Science with focus on distributed systems. Expert in smart contract security and optimization.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="bi bi-github"></i></a>
+                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                        <a href="#"><i class="bi bi-medium"></i></a>
+                    </div>
+                </div>
+                
+                <div class="team-card">
+                    <div class="team-avatar">
+                        <i class="bi bi-soundwave"></i>
+                    </div>
+                    <h4>Lyra Solen</h4>
+                    <div class="team-role">Audio Engineer</div>
+                    <p>Sound design specialist creating immersive audio experiences. Expert in spatial audio and procedural sound generation.</p>
+                    <div class="social-links">
+                        <a href="#"><i class="bi bi-spotify"></i></a>
+                        <a href="#"><i class="bi bi-youtube"></i></a>
+                        <a href="#"><i class="bi bi-linkedin"></i></a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Technology Section -->
+    <section class="tech-section">
+        <div class="container">
+            <h2 class="section-title">Technology Stack</h2>
+            <div class="tech-grid">
+                <div class="tech-card">
+                    <div class="tech-icon">
+                        <i class="bi bi-globe"></i>
+                    </div>
+                    <h4>Web Technologies</h4>
+                    <p>Built with modern web standards for maximum compatibility and performance.</p>
+                    <ul class="tech-features">
+                        <li>HTML5 Canvas for 60fps gameplay</li>
+                        <li>WebGL for advanced graphics</li>
+                        <li>Web Audio API for spatial sound</li>
+                        <li>Progressive Web App capabilities</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-card">
+                    <div class="tech-icon">
+                        <i class="bi bi-coin"></i>
+                    </div>
+                    <h4>Blockchain Integration</h4>
+                    <p>Seamless Web3 functionality with multiple blockchain support.</p>
+                    <ul class="tech-features">
+                        <li>Ethereum mainnet compatibility</li>
+                        <li>Polygon network for low fees</li>
+                        <li>MetaMask wallet integration</li>
+                        <li>Smart contract automation</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-card">
+                    <div class="tech-icon">
+                        <i class="bi bi-shield-check"></i>
+                    </div>
+                    <h4>Security & Privacy</h4>
+                    <p>Enterprise-grade security protecting user assets and data.</p>
+                    <ul class="tech-features">
+                        <li>Audited smart contracts</li>
+                        <li>No personal data storage</li>
+                        <li>Cryptographic verification</li>
+                        <li>Decentralized architecture</li>
+                    </ul>
+                </div>
+                
+                <div class="tech-card">
+                    <div class="tech-icon">
+                        <i class="bi bi-lightning"></i>
+                    </div>
+                    <h4>Performance</h4>
+                    <p>Optimized for smooth gameplay across all devices.</p>
+                    <ul class="tech-features">
+                        <li>60fps target framerate</li>
+                        <li>Efficient memory management</li>
+                        <li>Mobile-responsive design</li>
+                        <li>Offline gameplay capability</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Mission Section -->
+    <section class="mission-section">
+        <div class="container">
+            <div class="mission-content">
+                <h2 class="section-title">Our Mission</h2>
+                <h3>Bridging Gaming and Blockchain</h3>
+                <p>We believe the future of gaming lies in true digital ownership and player empowerment. Echo Pulse represents our vision of seamlessly integrating blockchain technology with engaging gameplay, creating experiences where players truly own their achievements.</p>
+                
+                <p>Our goal is not just to create another game, but to pioneer a new paradigm where skill, strategy, and dedication translate directly into real-world value through cryptocurrency rewards and NFT collectibles.</p>
+                
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-number">10K+</span>
+                        <span class="stat-label">Active Players</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">$50K+</span>
+                        <span class="stat-label">Rewards Distributed</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">5M+</span>
+                        <span class="stat-label">Games Played</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-number">99.9%</span>
+                        <span class="stat-label">Uptime</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Contact Section -->
+    <section class="contact-section">
+        <div class="container">
+            <h2 class="section-title">Get in Touch</h2>
+            <div class="contact-grid">
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="bi bi-envelope"></i>
+                    </div>
+                    <h4>Email Support</h4>
+                    <a href="mailto:support@echopulse.game">support@echopulse.game</a>
+                </div>
+                
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="bi bi-discord"></i>
+                    </div>
+                    <h4>Discord Community</h4>
+                    <a href="#">Join our server</a>
+                </div>
+                
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="bi bi-github"></i>
+                    </div>
+                    <h4>Open Source</h4>
+                    <a href="#">View on GitHub</a>
+                </div>
+                
+                <div class="contact-card">
+                    <div class="contact-icon">
+                        <i class="bi bi-twitter"></i>
+                    </div>
+                    <h4>Latest Updates</h4>
+                    <a href="#">@EchoPulseGame</a>
+                </div>
+            </div>
+            
+            <div style="text-align: center; margin-top: 3rem;">
+                <a href="new-game.html" class="btn btn-primary">
+                    <i class="bi bi-play-fill"></i> Start Playing
+                </a>
+                <a href="docs.html" class="btn btn-secondary">
+                    <i class="bi bi-book"></i> Read Documentation
+                </a>
+            </div>
+        </div>
+    </section>
+    
+    <script>
+        // Floating particles animation
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 25;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+        
+        // Animated robot in story section
+        function drawRobot() {
+            const canvas = document.getElementById('robotCanvas');
+            if (!canvas) return;
+            
+            const ctx = canvas.getContext('2d');
+            const centerX = 50;
+            const centerY = 50;
+            const time = Date.now() * 0.001;
+            
+            // Clear canvas
+            ctx.clearRect(0, 0, 100, 100);
+            
+            // Robot body (hexagon)
+            ctx.save();
+            ctx.translate(centerX, centerY);
+            
+            // Pulsing effect
+            const pulse = 0.8 + Math.sin(time * 2) * 0.2;
+            ctx.scale(pulse, pulse);
+            
+            // Body
+            ctx.beginPath();
+            ctx.fillStyle = '#1e40af';
+            for (let i = 0; i < 6; i++) {
+                const angle = (i * Math.PI) / 3;
+                const x = Math.cos(angle) * 20;
+                const y = Math.sin(angle) * 20;
+                if (i === 0) ctx.moveTo(x, y);
+                else ctx.lineTo(x, y);
+            }
+            ctx.closePath();
+            ctx.fill();
+            
+            // Glowing outline
+            ctx.strokeStyle = `rgba(59, 130, 246, ${0.8 + Math.sin(time * 3) * 0.2})`;
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // Core
+            ctx.beginPath();
+            ctx.arc(0, 0, 8, 0, Math.PI * 2);
+            ctx.fillStyle = `rgba(6, 182, 212, ${0.8 + Math.sin(time * 4) * 0.2})`;
+            ctx.fill();
+            
+            // Eyes
+            ctx.beginPath();
+            ctx.arc(-5, -8, 2, 0, Math.PI * 2);
+            ctx.arc(-5, 8, 2, 0, Math.PI * 2);
+            ctx.fillStyle = '#ef4444';
+            ctx.fill();
+            
+            ctx.restore();
+        }
+        
+        // Animate stats counters
+        function animateStats() {
+            const stats = document.querySelectorAll('.stat-number');
+            const targets = ['10K+', '$50K+', '5M+', '99.9%'];
+            
+            stats.forEach((stat, index) => {
+                // Simple fade-in effect when in viewport
+                const observer = new IntersectionObserver((entries) => {
+                    entries.forEach(entry => {
+                        if (entry.isIntersecting) {
+                            setTimeout(() => {
+                                stat.style.opacity = '1';
+                                stat.style.transform = 'translateY(0)';
+                            }, index * 200);
+                        }
+                    });
+                });
+                
+                stat.style.opacity = '0';
+                stat.style.transform = 'translateY(20px)';
+                stat.style.transition = 'all 0.6s ease';
+                
+                observer.observe(stat);
+            });
+        }
+        
+        // Initialize everything
+        document.addEventListener('DOMContentLoaded', () => {
+            createParticles();
+            animateStats();
+            
+            // Start robot animation
+            setInterval(drawRobot, 50);
+        });
+    </script>
+</body>
+</html>

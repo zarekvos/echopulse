@@ -1,0 +1,3290 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Echo Pulse - Documentation</title>
+    
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" sizes="32x32" href="assets/Logo.png">
+    <link rel="icon" type="image/png" sizes="16x16" href="assets/Logo.png">
+    <link rel="shortcut icon" href="assets/Logo.png">
+    <link rel="apple-touch-icon" sizes="180x180" href="assets/Logo.png">
+    <meta name="msapplication-TileImage" content="assets/Logo.png">
+    
+    <!-- Fonts -->
+    <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
+    <!-- Icons -->
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.0/font/bootstrap-icons.css">
+    
+    <!-- Web App Manifest -->
+    <link rel="manifest" href="manifest.json">
+    
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        :root {
+            --primary-blue: #0ea5e9;
+            --primary-purple: #8b5cf6;
+            --primary-cyan: #06b6d4;
+            --dark-bg: #0f172a;
+            --dark-card: #1e293b;
+            --dark-light: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #94a3b8;
+            --gradient-main: linear-gradient(135deg, #0ea5e9, #8b5cf6);
+            --success: #22c55e;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --info: #3b82f6;
+        }
+        
+        body {
+            font-family: 'Inter', sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            line-height: 1.6;
+        }
+        
+        /* Navigation */
+        .navbar {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            background: rgba(15, 23, 42, 0.95);
+            backdrop-filter: blur(20px);
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 1rem 2rem;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            z-index: 1000;
+        }
+        
+        .nav-brand {
+            font-family: 'Orbitron', monospace;
+            font-size: 1.5rem;
+            font-weight: 900;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-decoration: none;
+        }
+        
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+        
+        .nav-links a {
+            color: var(--text-secondary);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+        
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--primary-blue);
+        }
+        
+        /* Main Content */
+        .main-content {
+            margin-top: 80px;
+            display: flex;
+            min-height: calc(100vh - 80px);
+        }
+        
+        /* Sidebar */
+        .sidebar {
+            width: 280px;
+            background: var(--dark-card);
+            border-right: 1px solid rgba(59, 130, 246, 0.2);
+            padding: 2rem 0;
+            position: sticky;
+            top: 80px;
+            height: calc(100vh - 80px);
+            overflow-y: auto;
+        }
+        
+        .sidebar-section {
+            margin-bottom: 2rem;
+        }
+        
+        .sidebar-title {
+            font-weight: 700;
+            color: var(--text-primary);
+            padding: 0 2rem;
+            margin-bottom: 1rem;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+        
+        .sidebar-menu {
+            list-style: none;
+        }
+        
+        .sidebar-menu li {
+            margin-bottom: 0.25rem;
+        }
+        
+        .sidebar-menu a {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            padding: 0.75rem 2rem;
+            color: var(--text-secondary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+        
+        .sidebar-menu a:hover {
+            background: rgba(59, 130, 246, 0.1);
+            color: var(--primary-blue);
+            border-left-color: var(--primary-blue);
+        }
+        
+        .sidebar-menu a.active {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--primary-blue);
+            border-left-color: var(--primary-blue);
+        }
+        
+        /* Content Area */
+        .content-area {
+            flex: 1;
+            padding: 2rem;
+            max-width: calc(100vw - 280px);
+            overflow-x: auto;
+        }
+        
+        .content-section {
+            display: none;
+            max-width: 800px;
+        }
+        
+        .content-section.active {
+            display: block;
+        }
+        
+        .content-header {
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        .content-title {
+            font-family: 'Orbitron', monospace;
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 0.5rem;
+            background: var(--gradient-main);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .content-subtitle {
+            font-size: 1.1rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Typography */
+        h2 {
+            font-size: 1.75rem;
+            font-weight: 700;
+            margin: 2rem 0 1rem 0;
+            color: var(--text-primary);
+        }
+        
+        h3 {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin: 1.5rem 0 0.75rem 0;
+            color: var(--text-primary);
+        }
+        
+        h4 {
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin: 1rem 0 0.5rem 0;
+            color: var(--primary-blue);
+        }
+        
+        p {
+            margin-bottom: 1rem;
+            color: var(--text-secondary);
+        }
+        
+        /* Code Blocks */
+        .code-block {
+            background: rgba(0, 0, 0, 0.5);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin: 1rem 0;
+            overflow-x: auto;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+            line-height: 1.5;
+        }
+        
+        .code-block pre {
+            margin: 0;
+            color: var(--text-primary);
+        }
+        
+        .inline-code {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--primary-cyan);
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.875rem;
+        }
+        
+        /* Cards */
+        .info-card {
+            background: var(--dark-card);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .warning-card {
+            background: rgba(245, 158, 11, 0.1);
+            border: 1px solid rgba(245, 158, 11, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .success-card {
+            background: rgba(34, 197, 94, 0.1);
+            border: 1px solid rgba(34, 197, 94, 0.3);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin: 1.5rem 0;
+        }
+        
+        .card-title {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            font-weight: 600;
+            margin-bottom: 0.75rem;
+        }
+        
+        /* Tables */
+        .table-container {
+            overflow-x: auto;
+            margin: 1.5rem 0;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            background: var(--dark-card);
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid rgba(59, 130, 246, 0.2);
+        }
+        
+        th {
+            background: rgba(59, 130, 246, 0.2);
+            color: var(--text-primary);
+            font-weight: 600;
+            padding: 1rem;
+            text-align: left;
+        }
+        
+        td {
+            padding: 1rem;
+            border-top: 1px solid rgba(59, 130, 246, 0.1);
+            color: var(--text-secondary);
+        }
+        
+        tr:hover {
+            background: rgba(59, 130, 246, 0.05);
+        }
+        
+        /* Lists */
+        ul, ol {
+            margin: 1rem 0;
+            padding-left: 2rem;
+            color: var(--text-secondary);
+        }
+        
+        li {
+            margin-bottom: 0.5rem;
+        }
+        
+        /* Buttons */
+        .btn {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.75rem 1.5rem;
+            border-radius: 8px;
+            border: none;
+            font-weight: 600;
+            text-decoration: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            margin: 0.5rem 0.5rem 0.5rem 0;
+        }
+        
+        .btn-primary {
+            background: var(--gradient-main);
+            color: white;
+        }
+        
+        .btn-secondary {
+            background: var(--dark-card);
+            color: var(--text-secondary);
+            border: 1px solid rgba(59, 130, 246, 0.3);
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.3);
+        }
+        
+        /* Mobile Responsive */
+        @media (max-width: 768px) {
+            .navbar {
+                padding: 1rem;
+            }
+            
+            .nav-links {
+                display: none;
+            }
+            
+            .main-content {
+                flex-direction: column;
+            }
+            
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: static;
+                border-right: none;
+                border-bottom: 1px solid rgba(59, 130, 246, 0.2);
+            }
+            
+            .content-area {
+                max-width: 100%;
+                padding: 1rem;
+            }
+            
+            .content-title {
+                font-size: 2rem;
+            }
+        }
+        
+        /* Floating particles animation */
+        .floating-particles {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: -1;
+        }
+        
+        .particle {
+            position: absolute;
+            width: 2px;
+            height: 2px;
+            background: var(--primary-blue);
+            border-radius: 50%;
+            animation: float 20s infinite linear;
+        }
+        
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(0);
+                opacity: 0;
+            }
+            10% {
+                opacity: 1;
+            }
+            90% {
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(-100px) translateX(100px);
+                opacity: 0;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Floating Particles -->
+    <div class="floating-particles" id="particles"></div>
+    
+    <!-- Navigation -->
+    <nav class="navbar">
+        <a href="landing.html" class="nav-brand">
+            <i class="bi bi-soundwave"></i> Echo Pulse
+        </a>
+        <ul class="nav-links">
+            <li><a href="landing.html">Home</a></li>
+            <li><a href="new-game.html">Play Game</a></li>
+            <li><a href="docs.html" class="active">Documentation</a></li>
+            <li><a href="about.html">About</a></li>
+            <li><a href="leaderboard.html">Leaderboard</a></li>
+        </ul>
+    </nav>
+    
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-section">
+                <div class="sidebar-title">Getting Started</div>
+                <ul class="sidebar-menu">
+                    <li><a href="#overview" class="menu-link active"><i class="bi bi-play-circle"></i> Overview</a></li>
+                    <li><a href="#installation" class="menu-link"><i class="bi bi-download"></i> Installation</a></li>
+                    <li><a href="#wallet-setup" class="menu-link"><i class="bi bi-wallet2"></i> Wallet Setup</a></li>
+                    <li><a href="#first-game" class="menu-link"><i class="bi bi-controller"></i> First Game</a></li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">Game Mechanics</div>
+                <ul class="sidebar-menu">
+                    <li><a href="#controls" class="menu-link"><i class="bi bi-keyboard"></i> Controls</a></li>
+                    <li><a href="#echo-system" class="menu-link"><i class="bi bi-soundwave"></i> Echo System</a></li>
+                    <li><a href="#weapons" class="menu-link"><i class="bi bi-lightning"></i> Weapons</a></li>
+                    <li><a href="#enemies" class="menu-link"><i class="bi bi-bug"></i> Enemies</a></li>
+                    <li><a href="#scoring" class="menu-link"><i class="bi bi-trophy"></i> Scoring</a></li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">Web3 Integration</div>
+                <ul class="sidebar-menu">
+                    <li><a href="#blockchain" class="menu-link"><i class="bi bi-coin"></i> Blockchain</a></li>
+                    <li><a href="#nft-rewards" class="menu-link"><i class="bi bi-gem"></i> NFT Rewards</a></li>
+                    <li><a href="#leaderboards" class="menu-link"><i class="bi bi-bar-chart"></i> Leaderboards</a></li>
+                    <li><a href="#transactions" class="menu-link"><i class="bi bi-arrow-left-right"></i> Transactions</a></li>
+                </ul>
+            </div>
+            
+            <div class="sidebar-section">
+                <div class="sidebar-title">Advanced</div>
+                <ul class="sidebar-menu">
+                    <li><a href="#api-reference" class="menu-link"><i class="bi bi-code-slash"></i> API Reference</a></li>
+                    <li><a href="#smart-contracts" class="menu-link"><i class="bi bi-file-earmark-code"></i> Smart Contracts</a></li>
+                    <li><a href="#troubleshooting" class="menu-link"><i class="bi bi-exclamation-triangle"></i> Troubleshooting</a></li>
+                    <li><a href="#faq" class="menu-link"><i class="bi bi-question-circle"></i> FAQ</a></li>
+                </ul>
+            </div>
+        </aside>
+        
+        <!-- Content Area -->
+        <main class="content-area">
+            <!-- Overview Section -->
+            <section id="overview" class="content-section active">
+                <div class="content-header">
+                    <h1 class="content-title">Echo Pulse Documentation</h1>
+                    <p class="content-subtitle">Complete guide to mastering the Web3 echo detection game</p>
+                </div>
+                
+                <h2>What is Echo Pulse?</h2>
+                <p>Echo Pulse is a cutting-edge Web3 game that combines stealth gameplay with blockchain technology. Players hunt invisible enemies using advanced echo detection systems while earning real cryptocurrency rewards and NFTs.</p>
+                
+                <div class="info-card">
+                    <div class="card-title">
+                        <i class="bi bi-lightbulb" style="color: var(--warning);"></i>
+                        Core Concept
+                    </div>
+                    <p>In Echo Pulse, enemies are completely invisible to the naked eye. You must use your cyberpunk robot's echo pulse system to reveal their locations temporarily, then strike before they disappear again.</p>
+                </div>
+                
+                <h2>Key Features</h2>
+                <ul>
+                    <li><strong>Stealth Combat:</strong> Hunt invisible enemies using echo detection</li>
+                    <li><strong>Multiple Weapons:</strong> Three distinct weapon types with unique characteristics</li>
+                    <li><strong>Web3 Integration:</strong> Earn cryptocurrency and NFT rewards</li>
+                    <li><strong>Progressive Difficulty:</strong> Increasingly challenging levels with smarter AI</li>
+                    <li><strong>Global Leaderboards:</strong> Compete with players worldwide</li>
+                    <li><strong>Cyberpunk Aesthetics:</strong> Immersive futuristic visual design</li>
+                </ul>
+                
+                <h2>System Requirements</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Component</th>
+                                <th>Minimum</th>
+                                <th>Recommended</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Browser</td>
+                                <td>Chrome 90+, Firefox 88+</td>
+                                <td>Chrome 100+, Firefox 95+</td>
+                            </tr>
+                            <tr>
+                                <td>RAM</td>
+                                <td>4GB</td>
+                                <td>8GB</td>
+                            </tr>
+                            <tr>
+                                <td>Graphics</td>
+                                <td>WebGL 2.0 support</td>
+                                <td>Dedicated GPU</td>
+                            </tr>
+                            <tr>
+                                <td>Wallet</td>
+                                <td>MetaMask extension</td>
+                                <td>MetaMask + Hardware wallet</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </section>
+            
+            <!-- Installation Section -->
+            <section id="installation" class="content-section">
+                <div class="content-header">
+                    <h1 class="content-title">Installation</h1>
+                    <p class="content-subtitle">Get started with Echo Pulse in minutes</p>
+                </div>
+                
+                <h2>Step 1: Install MetaMask</h2>
+                <p>Echo Pulse requires MetaMask to handle Web3 transactions and wallet connectivity.</p>
+                
+                <div class="code-block">
+                    <pre>1. Visit https://metamask.io
+2. Click "Download" for your browser
+3. Add the extension to your browser
+4. Create a new wallet or import existing one
+5. Save your recovery phrase securely</pre>
+                </div>
+                
+                <div class="warning-card">
+                    <div class="card-title">
+                        <i class="bi bi-exclamation-triangle" style="color: var(--warning);"></i>
+                        Security Warning
+                    </div>
+                    <p>Never share your recovery phrase with anyone. Store it offline in a secure location. Anyone with access to your recovery phrase can control your wallet.</p>
+                </div>
+                
+                <h2>Step 2: Configure Network</h2>
+                <p>Add the supported blockchain networks to your MetaMask wallet:</p>
+                
+                <h3>Ethereum Mainnet (Primary)</h3>
+                <div class="code-block">
+                    <pre>Network Name: Ethereum Mainnet
+RPC URL: https://mainnet.infura.io/v3/YOUR_PROJECT_ID
+Chain ID: 1
+Currency Symbol: ETH
+Block Explorer: https://etherscan.io</pre>
+                </div>
+                
+                <h3>Polygon Network (Alternative)</h3>
+                <div class="code-block">
+                    <pre>Network Name: Polygon Mainnet
+RPC URL: https://polygon-rpc.com/
+Chain ID: 137
+Currency Symbol: MATIC
+Block Explorer: https://polygonscan.com</pre>
+                </div>
+                
+                <h2>Step 3: Launch Game</h2>
+                <ol>
+                    <li>Navigate to the Echo Pulse game page</li>
+                    <li>Click "Connect Wallet" button</li>
+                    <li>Approve the connection in MetaMask</li>
+                    <li>Start playing and earning rewards!</li>
+                </ol>
+                
+                <a href="new-game.html" class="btn btn-primary">
+                    <i class="bi bi-play-fill"></i> Launch Game
+                </a>
+            </section>
+            
+            <!-- First Game Section -->
+            <section id="first-game" class="content-section">
+                <div class="content-header">
+                    <h1 class="content-title">Your First Game</h1>
+                    <p class="content-subtitle">Complete beginner's guide to Echo Pulse gameplay</p>
+                </div>
+                
+                <div class="success-card">
+                    <div class="card-title">
+                        <i class="bi bi-rocket" style="color: var(--success);"></i>
+                        Ready to Start!
+                    </div>
+                    <p>Welcome to Echo Pulse! This guide will walk you through your first game step-by-step. Don't worry - you can play in Guest Mode first to learn the basics without any Web3 setup.</p>
+                </div>
+                
+                <h2>Pre-Game Setup</h2>
+                
+                <h3>Choose Your Mode</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Mode</th>
+                                <th>Requirements</th>
+                                <th>Benefits</th>
+                                <th>Best For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Guest Mode</td>
+                                <td>None - just click Play!</td>
+                                <td>Full gameplay, local leaderboard</td>
+                                <td>Learning the basics</td>
+                            </tr>
+                            <tr>
+                                <td>Wallet Mode</td>
+                                <td>MetaMask + supported network</td>
+                                <td>1.5x score multiplier + crypto rewards</td>
+                                <td>Earning while playing</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h3>Recommended Starting Approach</h3>
+                <div class="info-card">
+                    <div class="card-title">
+                        <i class="bi bi-lightbulb" style="color: var(--info);"></i>
+                        Learning Path
+                    </div>
+                    <p>Start with Guest Mode for your first 3-5 games to master the controls and mechanics. Then switch to Wallet Mode to start earning rewards!</p>
+                </div>
+                
+                <h2>Game Interface Tour</h2>
+                
+                <h3>Main HUD Elements</h3>
+                <ul>
+                    <li><strong>Health Bar (Top Left):</strong> Your robot's current health - avoid enemy contact!</li>
+                    <li><strong>Energy Meter (Top Left):</strong> Powers your echo pulse system - manage carefully</li>
+                    <li><strong>Score Counter (Top Right):</strong> Current game score and combo multiplier</li>
+                    <li><strong>Ammo Counter (Bottom Right):</strong> Current weapon ammunition</li>
+                    <li><strong>Level Progress (Bottom Center):</strong> Enemies remaining in current level</li>
+                    <li><strong>Mode Indicator (Top Center):</strong> Shows Guest/Wallet mode and multipliers</li>
+                </ul>
+                
+                <h3>Weapon Selection</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Key</th>
+                                <th>Weapon</th>
+                                <th>Damage</th>
+                                <th>Fire Rate</th>
+                                <th>Best For</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1</td>
+                                <td>Pulse Gun</td>
+                                <td>Medium</td>
+                                <td>High</td>
+                                <td>General combat, beginners</td>
+                            </tr>
+                            <tr>
+                                <td>2</td>
+                                <td>Scatter Shot</td>
+                                <td>Low per bullet</td>
+                                <td>Medium</td>
+                                <td>Multiple enemies, close range</td>
+                            </tr>
+                            <tr>
+                                <td>3</td>
+                                <td>Cannon</td>
+                                <td>Very High</td>
+                                <td>Low</td>
+                                <td>Phantom Guardians, precision shots</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h2>Level 1 Walkthrough</h2>
+                
+                <h3>Starting Position</h3>
+                <div class="warning-card">
+                    <div class="card-title">
+                        <i class="bi bi-eye-slash" style="color: var(--warning);"></i>
+                        Remember: Enemies Are Invisible!
+                    </div>
+                    <p>When the level starts, you won't see any enemies. This is normal! Use your echo pulse (SPACE) to reveal them.</p>
+                </div>
+                
+                <h3>Step-by-Step First Level</h3>
+                <ol>
+                    <li>
+                        <strong>Press and hold SPACE</strong> to emit your first echo pulse
+                        <ul>
+                            <li>You'll see enemies briefly highlighted in purple</li>
+                            <li>Count how many enemies you spotted</li>
+                            <li>Note their positions relative to walls and corners</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Select Pulse Gun (Press 1)</strong> - it's the most beginner-friendly
+                        <ul>
+                            <li>Good damage and high fire rate</li>
+                            <li>Forgiving for new players</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Move towards the nearest enemy</strong> using WASD keys
+                        <ul>
+                            <li>Keep some distance - don't get too close</li>
+                            <li>Use short echo pulses to track enemy movement</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Line up your shot and click to fire</strong>
+                        <ul>
+                            <li>Lead your target if the enemy is moving</li>
+                            <li>Fire multiple shots for better hit chance</li>
+                        </ul>
+                    </li>
+                    <li>
+                        <strong>Repeat for all enemies in the level</strong>
+                        <ul>
+                            <li>Level 1 typically has 3-5 Basic Stalkers</li>
+                            <li>They move slowly and predictably</li>
+                        </ul>
+                    </li>
+                </ol>
+                
+                <h2>First Game Tips</h2>
+                
+                <h3>Essential Survival Tips</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tip</th>
+                                <th>Why Important</th>
+                                <th>How To</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Keep Moving</td>
+                                <td>Enemies hurt on contact</td>
+                                <td>Never stand still, use WASD constantly</td>
+                            </tr>
+                            <tr>
+                                <td>Manage Energy</td>
+                                <td>Echo pulses consume energy</td>
+                                <td>Short pulses, not continuous holding</td>
+                            </tr>
+                            <tr>
+                                <td>Use Walls</td>
+                                <td>Enemies can't pass through</td>
+                                <td>Put walls between you and enemies</td>
+                            </tr>
+                            <tr>
+                                <td>Stay Calm</td>
+                                <td>Panic leads to mistakes</td>
+                                <td>Take time to aim, breathe</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h3>Common Beginner Mistakes</h3>
+                <ul>
+                    <li><strong>Holding SPACE too long:</strong> Wastes energy quickly</li>
+                    <li><strong>Standing still while aiming:</strong> Makes you an easy target</li>
+                    <li><strong>Rushing into groups:</strong> Take on enemies one at a time</li>
+                    <li><strong>Not switching weapons:</strong> Each weapon has optimal use cases</li>
+                    <li><strong>Ignoring health/energy bars:</strong> Monitor your status constantly</li>
+                </ul>
+                
+                <h2>Your First Victory</h2>
+                
+                <h3>Level Completion</h3>
+                <div class="success-card">
+                    <div class="card-title">
+                        <i class="bi bi-trophy" style="color: var(--warning);"></i>
+                        Congratulations!
+                    </div>
+                    <p>When you eliminate all enemies in Level 1, you'll see your first victory screen with score breakdown and performance statistics.</p>
+                </div>
+                
+                <h4>Score Breakdown</h4>
+                <ul>
+                    <li><strong>Base Score:</strong> Points for each enemy eliminated</li>
+                    <li><strong>Accuracy Bonus:</strong> Extra points for good shooting</li>
+                    <li><strong>Speed Bonus:</strong> Bonus for fast completion</li>
+                    <li><strong>Perfect Clear:</strong> Extra bonus if no damage taken</li>
+                    <li><strong>Mode Multiplier:</strong> 1.0x for Guest, 1.5x for Wallet mode</li>
+                </ul>
+                
+                <h3>Next Steps</h3>
+                <div class="info-card">
+                    <div class="card-title">
+                        <i class="bi bi-arrow-right" style="color: var(--primary-purple);"></i>
+                        Continue Your Journey
+                    </div>
+                    <p>After completing Level 1, you can either continue to Level 2 for a bigger challenge, or restart Level 1 to improve your score and accuracy.</p>
+                </div>
+                
+                <h4>Progression Recommendations</h4>
+                <ol>
+                    <li><strong>Master Level 1:</strong> Get a perfect clear (no damage, 100% accuracy)</li>
+                    <li><strong>Try different weapons:</strong> Experiment with Scatter Shot and Cannon</li>
+                    <li><strong>Connect wallet:</strong> Switch to Wallet Mode for rewards</li>
+                    <li><strong>Challenge Level 2:</strong> Face your first Shadow Hunters</li>
+                    <li><strong>Join leaderboards:</strong> Compete with other players</li>
+                </ol>
+                
+                <h2>Troubleshooting First Game Issues</h2>
+                
+                <h3>Common Technical Problems</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Problem</th>
+                                <th>Likely Cause</th>
+                                <th>Solution</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Game won't load</td>
+                                <td>Browser compatibility</td>
+                                <td>Use Chrome/Firefox, enable WebGL</td>
+                            </tr>
+                            <tr>
+                                <td>No sound</td>
+                                <td>Browser audio settings</td>
+                                <td>Check browser sound permissions</td>
+                            </tr>
+                            <tr>
+                                <td>Laggy movement</td>
+                                <td>Low performance</td>
+                                <td>Close other tabs, update browser</td>
+                            </tr>
+                            <tr>
+                                <td>Controls not working</td>
+                                <td>Keyboard focus</td>
+                                <td>Click on game area first</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h3>Gameplay Help</h3>
+                <div class="warning-card">
+                    <div class="card-title">
+                        <i class="bi bi-question-circle" style="color: var(--info);"></i>
+                        Need More Help?
+                    </div>
+                    <p>If you're still having trouble with your first game, try our <a href="#troubleshooting">troubleshooting section</a> or visit our community Discord for real-time help from other players!</p>
+                </div>
+                
+                <div class="info-card">
+                    <div class="card-title">
+                        <i class="bi bi-controller" style="color: var(--success);"></i>
+                        Ready to Play?
+                    </div>
+                    <p>You now have everything you need to succeed in Echo Pulse! Remember: start with Guest Mode, master the basics, then switch to Wallet Mode for rewards. Good hunting!</p>
+                </div>
+            </section>
+            
+            <!-- Wallet Setup Section -->
+            <section id="wallet-setup" class="content-section">
+                <div class="content-header">
+                    <h1 class="content-title">Wallet Setup</h1>
+                    <p class="content-subtitle">Secure your Web3 gaming experience</p>
+                </div>
+                
+                <h2>Creating Your First Wallet</h2>
+                <p>If you're new to Web3, follow these steps to create your first cryptocurrency wallet:</p>
+                
+                <h3>1. Generate Wallet</h3>
+                <ul>
+                    <li>Open MetaMask extension</li>
+                    <li>Click "Create a Wallet"</li>
+                    <li>Create a strong password</li>
+                    <li>Watch the security video</li>
+                </ul>
+                
+                <h3>2. Backup Recovery Phrase</h3>
+                <div class="warning-card">
+                    <div class="card-title">
+                        <i class="bi bi-shield-exclamation" style="color: var(--danger);"></i>
+                        Critical Step
+                    </div>
+                    <p>Your recovery phrase is the ONLY way to restore your wallet. Write it down on paper and store it safely offline. Never store it digitally or share it with anyone.</p>
+                </div>
+                
+                <h3>3. Verify Recovery Phrase</h3>
+                <p>MetaMask will ask you to confirm your recovery phrase by selecting words in the correct order. This ensures you've recorded it correctly.</p>
+                
+                <h2>Adding Funds</h2>
+                <p>To participate in Web3 features, you'll need cryptocurrency in your wallet:</p>
+                
+                <h3>Buying Cryptocurrency</h3>
+                <ul>
+                    <li><strong>Centralized Exchanges:</strong> Coinbase, Binance, Kraken</li>
+                    <li><strong>Direct Purchase:</strong> Use MetaMask's built-in buy feature</li>
+                    <li><strong>Peer-to-Peer:</strong> LocalBitcoins, Bisq</li>
+                </ul>
+                
+                <h3>Transferring to MetaMask</h3>
+                <div class="code-block">
+                    <pre>1. Copy your MetaMask wallet address
+2. In your exchange, initiate withdrawal
+3. Paste your MetaMask address as destination
+4. Select appropriate network (Ethereum/Polygon)
+5. Confirm the transaction</pre>
+                </div>
+                
+                <div class="success-card">
+                    <div class="card-title">
+                        <i class="bi bi-check-circle" style="color: var(--success);"></i>
+                        Pro Tip
+                    </div>
+                    <p>Start with small amounts when learning. Always double-check addresses and network compatibility before sending transactions.</p>
+                </div>
+            </section>
+            
+            <!-- Controls Section -->
+            <section id="controls" class="content-section">
+                <div class="content-header">
+                    <h1 class="content-title">Game Controls</h1>
+                    <p class="content-subtitle">Master the cyberpunk robot controls</p>
+                </div>
+                
+                <h2>Basic Movement</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Key</th>
+                                <th>Action</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="inline-code">W</span></td>
+                                <td>Move Up</td>
+                                <td>Move your robot forward</td>
+                            </tr>
+                            <tr>
+                                <td><span class="inline-code">A</span></td>
+                                <td>Move Left</td>
+                                <td>Strafe left</td>
+                            </tr>
+                            <tr>
+                                <td><span class="inline-code">S</span></td>
+                                <td>Move Down</td>
+                                <td>Move backward</td>
+                            </tr>
+                            <tr>
+                                <td><span class="inline-code">D</span></td>
+                                <td>Move Right</td>
+                                <td>Strafe right</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h2>Combat Controls</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Control</th>
+                                <th>Action</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="inline-code">Mouse Movement</span></td>
+                                <td>Aim</td>
+                                <td>Rotate robot to aim at cursor</td>
+                            </tr>
+                            <tr>
+                                <td><span class="inline-code">Left Click</span></td>
+                                <td>Shoot</td>
+                                <td>Fire current weapon</td>
+                            </tr>
+                            <tr>
+                                <td><span class="inline-code">SPACE</span></td>
+                                <td>Echo Pulse</td>
+                                <td>Reveal invisible enemies (costs energy)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h2>Weapon Selection</h2>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Key</th>
+                                <th>Weapon</th>
+                                <th>Characteristics</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><span class="inline-code">1</span></td>
+                                <td>Echo Pulse Gun</td>
+                                <td>Balanced damage and speed</td>
+                            </tr>
+                            <tr>
+                                <td><span class="inline-code">2</span></td>
+                                <td>Rapid Fire</td>
+                                <td>High speed, lower damage</td>
+                            </tr>
+                            <tr>
+                                <td><span class="inline-code">3</span></td>
+                                <td>Heavy Cannon</td>
+                                <td>High damage, slower speed</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h2>Advanced Techniques</h2>
+                
+                <h3>Circle Strafe</h3>
+                <p>Move in circles around enemies while firing to avoid their attacks. Combine <span class="inline-code">A/D</span> movement with mouse aiming.</p>
+                
+                <h3>Echo Prediction</h3>
+                <p>Use echo pulses strategically. Enemies move predictably - learn their patterns and predict where they'll be when the echo fades.</p>
+                
+                <h3>Energy Management</h3>
+                <p>Your echo energy regenerates over time. Don't waste it on unnecessary pulses. Save energy for critical moments when surrounded by enemies.</p>
+                
+                <div class="info-card">
+                    <div class="card-title">
+                        <i class="bi bi-controller" style="color: var(--info);"></i>
+                        Gamepad Support
+                    </div>
+                    <p>Echo Pulse supports Xbox and PlayStation controllers. Connect your gamepad and it will be automatically detected. Button mappings follow standard conventions.</p>
+                </div>
+            </section>
+            
+            <!-- Echo System Section -->
+            <section id="echo-system" class="content-section">
+                <div class="content-header">
+                    <h1 class="content-title">Echo Detection System</h1>
+                    <p class="content-subtitle">Master the core mechanic of invisible enemy detection</p>
+                </div>
+                
+                <h2>How Echo Detection Works</h2>
+                <p>The echo system is the heart of Echo Pulse gameplay. Your cyberpunk robot emits sound waves that bounce off invisible enemies, briefly revealing their locations.</p>
+                
+                <h3>Echo Mechanics</h3>
+                <ul>
+                    <li><strong>Energy Cost:</strong> Each echo pulse consumes 20 energy points</li>
+                    <li><strong>Cooldown:</strong> 1 second between pulses</li>
+                    <li><strong>Range:</strong> 300 pixel radius from player position</li>
+                    <li><strong>Duration:</strong> Enemies remain visible for 3 seconds</li>
+                    <li><strong>Regeneration:</strong> Energy regenerates at 1 point per 0.1 seconds</li>
+                </ul>
+                
+                <h2>Visual Indicators</h2>
+                
+                <h3>Echo Wave Animation</h3>
+                <p>When you send an echo pulse, you'll see expanding circular waves emanating from your robot. These represent the sound waves spreading outward.</p>
+                
+                <h3>Enemy Revelation</h3>
+                <p>Enemies caught in the echo wave will fade into visibility with a red glowing outline. They gradually fade back to invisibility as the effect wears off.</p>
+                
+                <h3>Energy Bar</h3>
+                <p>Your energy level is displayed in the bottom-left UI. The cyan-colored bar shows current energy, with a lightning bolt icon.</p>
+                
+                <h2>Strategic Echo Usage</h2>
+                
+                <h3>Timing Your Pulses</h3>
+                <div class="info-card">
+                    <div class="card-title">
+                        <i class="bi bi-clock" style="color: var(--info);"></i>
+                        Optimal Timing
+                    </div>
+                    <p>Don't pulse randomly. Listen for audio cues like footsteps or enemy attacks. Use pulses when you suspect enemies are nearby or when entering new areas.</p>
+                </div>
+                
+                <h3>Energy Conservation</h3>
+                <ul>
+                    <li>Wait for energy to regenerate between pulses</li>
+                    <li>Use the 3-second visibility window effectively</li>
+                    <li>Avoid panic-pulsing when surrounded</li>
+                    <li>Plan your pulses based on enemy movement patterns</li>
+                </ul>
+                
+                <h3>Area Scanning</h3>
+                <p>Move around while pulsing to scan large areas. The echo range is limited, so positioning is crucial for effective detection.</p>
+                
+                <h2>Advanced Echo Techniques</h2>
+                
+                <h3>Predictive Pulsing</h3>
+                <p>Learn enemy movement patterns and pulse where you predict they'll be, not where they currently are.</p>
+                
+                <h3>Corner Clearing</h3>
+                <p>Use echoes to safely check around corners and obstacles before moving into dangerous areas.</p>
+                
+                <h3>Combat Pulsing</h3>
+                <p>During combat, pulse when enemies are likely to reposition or when you lose track of their movements.</p>
+                
+                <div class="warning-card">
+                    <div class="card-title">
+                        <i class="bi bi-battery-half" style="color: var(--warning);"></i>
+                        Energy Management Warning
+                    </div>
+                    <p>Running out of energy in dangerous situations can be fatal. Always keep at least 40 energy in reserve for emergency detection.</p>
+                </div>
+            </section>
+            
+            <!-- Weapons Section -->
+            <section id="weapons" class="content-section">
+                <div class="content-header">
+                    <h1 class="content-title">Weapon Systems</h1>
+                    <p class="content-subtitle">Choose your arsenal wisely</p>
+                </div>
+                
+                <h2>Weapon Overview</h2>
+                <p>Echo Pulse features three distinct weapon types, each with unique advantages and tactical applications. Master all three to adapt to different combat situations.</p>
+                
+                <h2>Echo Pulse Gun (Default)</h2>
+                <div class="info-card">
+                    <div class="card-title">
+                        <i class="bi bi-soundwave" style="color: var(--primary-cyan);"></i>
+                        Echo Pulse Gun
+                    </div>
+                    <p>The balanced primary weapon. Reliable damage output with moderate firing speed. Perfect for most combat situations.</p>
+                </div>
+                
+                <h3>Specifications</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Attribute</th>
+                                <th>Value</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Damage</td>
+                                <td>1 point</td>
+                                <td>Standard damage per shot</td>
+                            </tr>
+                            <tr>
+                                <td>Fire Rate</td>
+                                <td>Medium</td>
+                                <td>Balanced shooting speed</td>
+                            </tr>
+                            <tr>
+                                <td>Accuracy</td>
+                                <td>High</td>
+                                <td>Precise targeting</td>
+                            </tr>
+                            <tr>
+                                <td>Bullet Speed</td>
+                                <td>8 units/frame</td>
+                                <td>Good projectile velocity</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h3>Best Used For</h3>
+                <ul>
+                    <li>General combat situations</li>
+                    <li>Medium-range engagements</li>
+                    <li>Precise targeting of revealed enemies</li>
+                    <li>Energy-efficient combat</li>
+                </ul>
+                
+                <h2>Rapid Fire Weapon</h2>
+                <div class="warning-card">
+                    <div class="card-title">
+                        <i class="bi bi-lightning" style="color: var(--warning);"></i>
+                        Rapid Fire System
+                    </div>
+                    <p>High-speed automatic weapon that fires multiple projectiles per shot. Lower individual damage but higher total DPS.</p>
+                </div>
+                
+                <h3>Specifications</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Attribute</th>
+                                <th>Value</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Damage</td>
+                                <td>1 point per bullet</td>
+                                <td>3 bullets per shot</td>
+                            </tr>
+                            <tr>
+                                <td>Fire Rate</td>
+                                <td>Very High</td>
+                                <td>Rapid succession</td>
+                            </tr>
+                            <tr>
+                                <td>Accuracy</td>
+                                <td>Medium</td>
+                                <td>Slight spread pattern</td>
+                            </tr>
+                            <tr>
+                                <td>Bullet Speed</td>
+                                <td>8 units/frame</td>
+                                <td>Same as pulse gun</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h3>Best Used For</h3>
+                <ul>
+                    <li>Close-range combat</li>
+                    <li>Fighting multiple enemies</li>
+                    <li>Suppressing enemy movement</li>
+                    <li>When accuracy isn't critical</li>
+                </ul>
+                
+                <h2>Heavy Cannon</h2>
+                <div class="success-card">
+                    <div class="card-title">
+                        <i class="bi bi-circle-fill" style="color: var(--danger);"></i>
+                        Heavy Cannon
+                    </div>
+                    <p>Devastating single-shot weapon with maximum damage. Slower firing rate but can eliminate enemies quickly.</p>
+                </div>
+                
+                <h3>Specifications</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Attribute</th>
+                                <th>Value</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Damage</td>
+                                <td>3 points</td>
+                                <td>Triple damage per shot</td>
+                            </tr>
+                            <tr>
+                                <td>Fire Rate</td>
+                                <td>Slow</td>
+                                <td>Significant delay between shots</td>
+                            </tr>
+                            <tr>
+                                <td>Accuracy</td>
+                                <td>High</td>
+                                <td>Precise single projectile</td>
+                            </tr>
+                            <tr>
+                                <td>Bullet Speed</td>
+                                <td>8 units/frame</td>
+                                <td>Same velocity, larger projectile</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h3>Best Used For</h3>
+                <ul>
+                    <li>High-health enemies</li>
+                    <li>Long-range sniping</li>
+                    <li>Conserving ammunition</li>
+                    <li>Boss battles</li>
+                </ul>
+                
+                <h2>Weapon Selection Strategy</h2>
+                
+                <h3>Situational Switching</h3>
+                <p>The key to mastering Echo Pulse is knowing when to switch weapons. Use the number keys (1-3) to quickly change weapons based on the situation:</p>
+                
+                <div class="code-block">
+                    <pre>// Weapon switching examples
+Single enemy at medium range → Echo Pulse Gun
+Multiple enemies close range → Rapid Fire
+High-health enemy far away → Heavy Cannon
+Boss battle → Heavy Cannon + precise timing</pre>
+                </div>
+                
+                <h3>Weapon Mastery Tips</h3>
+                <ul>
+                    <li><strong>Practice switching:</strong> Get comfortable with rapid weapon changes</li>
+                    <li><strong>Learn effective ranges:</strong> Each weapon has an optimal engagement distance</li>
+                    <li><strong>Count your shots:</strong> Know how many hits different enemies require</li>
+                    <li><strong>Predict movement:</strong> Lead your targets, especially with slower weapons</li>
+                </ul>
+            </section>
+            
+            <!-- Enemies Section -->
+            <section id="enemies" class="content-section">
+                <div class="content-header">
+                    <h1 class="content-title">Enemies & AI Behavior</h1>
+                    <p class="content-subtitle">Understanding enemy types, patterns, and combat strategies</p>
+                </div>
+                
+                <div class="warning-card">
+                    <div class="card-title">
+                        <i class="bi bi-eye-slash" style="color: var(--danger);"></i>
+                        Invisible Threat
+                    </div>
+                    <p>All enemies in Echo Pulse are completely invisible until revealed by your echo pulse system. Master the art of detection and prediction to survive.</p>
+                </div>
+                
+                <h2>Enemy Types</h2>
+                
+                <h3>Basic Stalker</h3>
+                <div class="info-card">
+                    <div class="card-title">
+                        <i class="bi bi-person-walking" style="color: var(--info);"></i>
+                        Entry-Level Threat
+                    </div>
+                    <p>The most common enemy type. Moves in predictable patterns and has basic AI behavior.</p>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Attribute</th>
+                                <th>Value</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Health</td>
+                                <td>100 HP</td>
+                                <td>Standard enemy health</td>
+                            </tr>
+                            <tr>
+                                <td>Speed</td>
+                                <td>2 units/frame</td>
+                                <td>Moderate movement speed</td>
+                            </tr>
+                            <tr>
+                                <td>Damage</td>
+                                <td>20 HP per hit</td>
+                                <td>Contact damage to player</td>
+                            </tr>
+                            <tr>
+                                <td>Behavior</td>
+                                <td>Chase Player</td>
+                                <td>Direct pursuit patterns</td>
+                            </tr>
+                            <tr>
+                                <td>Spawn Rate</td>
+                                <td>High</td>
+                                <td>Most common in early levels</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h4>Combat Strategy</h4>
+                <ul>
+                    <li><strong>Echo Timing:</strong> Use short pulses to conserve energy</li>
+                    <li><strong>Movement:</strong> Circle-strafe to avoid contact</li>
+                    <li><strong>Weapon Choice:</strong> Pulse Gun is most effective</li>
+                    <li><strong>Group Management:</strong> Separate clusters before engaging</li>
+                </ul>
+                
+                <h3>Shadow Hunter</h3>
+                <div class="warning-card">
+                    <div class="card-title">
+                        <i class="bi bi-lightning-charge" style="color: var(--warning);"></i>
+                        Advanced Threat
+                    </div>
+                    <p>Fast-moving enemies with unpredictable movement patterns. Requires advanced prediction skills.</p>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Attribute</th>
+                                <th>Value</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Health</td>
+                                <td>75 HP</td>
+                                <td>Lower health, higher speed</td>
+                            </tr>
+                            <tr>
+                                <td>Speed</td>
+                                <td>4 units/frame</td>
+                                <td>Very fast movement</td>
+                            </tr>
+                            <tr>
+                                <td>Damage</td>
+                                <td>25 HP per hit</td>
+                                <td>Higher contact damage</td>
+                            </tr>
+                            <tr>
+                                <td>Behavior</td>
+                                <td>Zigzag Pattern</td>
+                                <td>Unpredictable movement</td>
+                            </tr>
+                            <tr>
+                                <td>Special</td>
+                                <td>Echo Resistance</td>
+                                <td>Briefly visible for shorter time</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h4>Combat Strategy</h4>
+                <ul>
+                    <li><strong>Lead Targets:</strong> Shoot where they're going, not where they are</li>
+                    <li><strong>Rapid Fire:</strong> Use spread weapons for better hit chance</li>
+                    <li><strong>Quick Pulses:</strong> Frequent short echos to track movement</li>
+                    <li><strong>Positioning:</strong> Use walls and corners to limit their movement</li>
+                </ul>
+                
+                <h3>Phantom Guardian</h3>
+                <div class="danger-card">
+                    <div class="card-title">
+                        <i class="bi bi-shield-fill-exclamation" style="color: var(--danger);"></i>
+                        Elite Threat
+                    </div>
+                    <p>Heavily armored enemies that can survive multiple hits. Often serves as level boss or mini-boss.</p>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Attribute</th>
+                                <th>Value</th>
+                                <th>Notes</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Health</td>
+                                <td>300 HP</td>
+                                <td>Heavily armored</td>
+                            </tr>
+                            <tr>
+                                <td>Speed</td>
+                                <td>1.5 units/frame</td>
+                                <td>Slow but steady</td>
+                            </tr>
+                            <tr>
+                                <td>Damage</td>
+                                <td>40 HP per hit</td>
+                                <td>Devastating contact damage</td>
+                            </tr>
+                            <tr>
+                                <td>Behavior</td>
+                                <td>Smart Patrol</td>
+                                <td>Area denial tactics</td>
+                            </tr>
+                            <tr>
+                                <td>Special</td>
+                                <td>Damage Resistance</td>
+                                <td>50% damage reduction from light weapons</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h4>Combat Strategy</h4>
+                <ul>
+                    <li><strong>Heavy Weapons:</strong> Use cannon for maximum damage</li>
+                    <li><strong>Hit and Run:</strong> Attack and retreat to safe distance</li>
+                    <li><strong>Energy Management:</strong> Long echo pulses to track precisely</li>
+                    <li><strong>Patience:</strong> Don't rush - one mistake can be fatal</li>
+                </ul>
+                
+                <h2>AI Behavior Patterns</h2>
+                
+                <h3>Level Progression</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Level Range</th>
+                                <th>Enemy Mix</th>
+                                <th>AI Complexity</th>
+                                <th>Special Features</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1-3</td>
+                                <td>100% Basic Stalkers</td>
+                                <td>Simple chase AI</td>
+                                <td>Learning phase</td>
+                            </tr>
+                            <tr>
+                                <td>4-7</td>
+                                <td>70% Stalkers, 30% Hunters</td>
+                                <td>Mixed behavior patterns</td>
+                                <td>Speed challenges</td>
+                            </tr>
+                            <tr>
+                                <td>8-12</td>
+                                <td>50% Stalkers, 40% Hunters, 10% Guardians</td>
+                                <td>Coordinated attacks</td>
+                                <td>Tank introductions</td>
+                            </tr>
+                            <tr>
+                                <td>13-15</td>
+                                <td>30% Stalkers, 50% Hunters, 20% Guardians</td>
+                                <td>Advanced AI tactics</td>
+                                <td>Boss-level difficulty</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h3>Advanced AI Features</h3>
+                <ul>
+                    <li><strong>Group Coordination:</strong> Enemies work together to surround player</li>
+                    <li><strong>Adaptive Behavior:</strong> AI learns from player movement patterns</li>
+                    <li><strong>Strategic Positioning:</strong> Enemies use map layout to their advantage</li>
+                    <li><strong>Echo Prediction:</strong> Higher-level enemies anticipate echo pulses</li>
+                </ul>
+                
+                <div class="success-card">
+                    <div class="card-title">
+                        <i class="bi bi-lightbulb" style="color: var(--success);"></i>
+                        Pro Tip
+                    </div>
+                    <p>Enemy AI becomes more sophisticated as you progress. What works in level 1 won't work in level 10. Adapt your strategies and master all weapon types to succeed.</p>
+                </div>
+            </section>
+            
+            <!-- Scoring Section -->
+            <section id="scoring" class="content-section">
+                <div class="content-header">
+                    <h1 class="content-title">Scoring & Rewards System</h1>
+                    <p class="content-subtitle">Understanding points, multipliers, and Web3 rewards</p>
+                </div>
+                
+                <div class="info-card">
+                    <div class="card-title">
+                        <i class="bi bi-trophy" style="color: var(--warning);"></i>
+                        Dual Scoring System
+                    </div>
+                    <p>Echo Pulse features both traditional gaming scores and Web3 cryptocurrency rewards. Your performance determines both your leaderboard position and token earnings.</p>
+                </div>
+                
+                <h2>Base Scoring System</h2>
+                
+                <h3>Enemy Elimination Points</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Enemy Type</th>
+                                <th>Base Points</th>
+                                <th>Guest Mode</th>
+                                <th>Wallet Mode</th>
+                                <th>Bonus Conditions</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Basic Stalker</td>
+                                <td>100</td>
+                                <td>100</td>
+                                <td>150</td>
+                                <td>+50% wallet bonus</td>
+                            </tr>
+                            <tr>
+                                <td>Shadow Hunter</td>
+                                <td>200</td>
+                                <td>200</td>
+                                <td>300</td>
+                                <td>+50% wallet bonus</td>
+                            </tr>
+                            <tr>
+                                <td>Phantom Guardian</td>
+                                <td>500</td>
+                                <td>500</td>
+                                <td>750</td>
+                                <td>+50% wallet bonus</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h3>Level Completion Bonuses</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Level</th>
+                                <th>Base Bonus</th>
+                                <th>Guest Mode</th>
+                                <th>Wallet Mode</th>
+                                <th>Perfect Clear Bonus</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>1-5</td>
+                                <td>500 + (level × 100)</td>
+                                <td>Standard</td>
+                                <td>2x Multiplier</td>
+                                <td>+1000 points</td>
+                            </tr>
+                            <tr>
+                                <td>6-10</td>
+                                <td>1000 + (level × 150)</td>
+                                <td>Standard</td>
+                                <td>2x Multiplier</td>
+                                <td>+2000 points</td>
+                            </tr>
+                            <tr>
+                                <td>11-15</td>
+                                <td>2000 + (level × 200)</td>
+                                <td>Standard</td>
+                                <td>2x Multiplier</td>
+                                <td>+5000 points</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h2>Performance Multipliers</h2>
+                
+                <h3>Efficiency Bonuses</h3>
+                <ul>
+                    <li><strong>Perfect Accuracy (100%):</strong> 2x score multiplier</li>
+                    <li><strong>Excellent Accuracy (90%+):</strong> 1.5x score multiplier</li>
+                    <li><strong>Good Accuracy (75%+):</strong> 1.25x score multiplier</li>
+                    <li><strong>No Damage Taken:</strong> 1.5x score multiplier</li>
+                    <li><strong>Speed Clear:</strong> Complete level in under 60 seconds = 1.3x multiplier</li>
+                </ul>
+                
+                <h3>Combo System</h3>
+                <div class="success-card">
+                    <div class="card-title">
+                        <i class="bi bi-fire" style="color: var(--danger);"></i>
+                        Elimination Streaks
+                    </div>
+                    <p>Eliminate enemies in quick succession to build combo multipliers. Higher combos = higher rewards!</p>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Combo Count</th>
+                                <th>Multiplier</th>
+                                <th>Time Window</th>
+                                <th>Visual Effect</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>3-5 enemies</td>
+                                <td>1.2x</td>
+                                <td>5 seconds</td>
+                                <td>Blue glow</td>
+                            </tr>
+                            <tr>
+                                <td>6-9 enemies</td>
+                                <td>1.5x</td>
+                                <td>4 seconds</td>
+                                <td>Purple glow</td>
+                            </tr>
+                            <tr>
+                                <td>10+ enemies</td>
+                                <td>2.0x</td>
+                                <td>3 seconds</td>
+                                <td>Gold glow + screen shake</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h2>Web3 Rewards System</h2>
+                
+                <h3>Token Earnings</h3>
+                <div class="warning-card">
+                    <div class="card-title">
+                        <i class="bi bi-currency-bitcoin" style="color: var(--warning);"></i>
+                        Cryptocurrency Rewards
+                    </div>
+                    <p>Players with connected wallets earn ECP (Echo Pulse Coins) based on their performance. Tokens have real-world value and can be traded.</p>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Achievement</th>
+                                <th>ECP Reward</th>
+                                <th>USD Value*</th>
+                                <th>Requirements</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Level Completion</td>
+                                <td>0.1 - 0.5 ECP</td>
+                                <td>$0.10 - $0.50</td>
+                                <td>Complete any level</td>
+                            </tr>
+                            <tr>
+                                <td>Perfect Clear</td>
+                                <td>1.0 ECP</td>
+                                <td>$1.00</td>
+                                <td>No damage + 100% accuracy</td>
+                            </tr>
+                            <tr>
+                                <td>Daily Challenge</td>
+                                <td>2.0 ECP</td>
+                                <td>$2.00</td>
+                                <td>Complete special daily level</td>
+                            </tr>
+                            <tr>
+                                <td>Leaderboard Top 10</td>
+                                <td>10.0 ECP</td>
+                                <td>$10.00</td>
+                                <td>Weekly leaderboard ranking</td>
+                            </tr>
+                            <tr>
+                                <td>Tournament Victory</td>
+                                <td>50.0 ECP</td>
+                                <td>$50.00</td>
+                                <td>Win monthly tournament</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <p><em>*USD values are approximate and based on current market rates. Token values may fluctuate.</em></p>
+                
+                <h3>NFT Achievements</h3>
+                <div class="info-card">
+                    <div class="card-title">
+                        <i class="bi bi-gem" style="color: var(--primary-purple);"></i>
+                        Collectible Achievements
+                    </div>
+                    <p>Rare accomplishments unlock unique NFT badges that showcase your skills and can be displayed in your wallet or sold on NFT marketplaces.</p>
+                </div>
+                
+                <h4>Available NFT Badges</h4>
+                <ul>
+                    <li><strong>Echo Master:</strong> Complete all 15 levels (Rare)</li>
+                    <li><strong>Ghost Hunter:</strong> Eliminate 1000 total enemies (Epic)</li>
+                    <li><strong>Phantom Slayer:</strong> Defeat 50 Phantom Guardians (Epic)</li>
+                    <li><strong>Speed Demon:</strong> Complete 10 levels in under 30 seconds each (Legendary)</li>
+                    <li><strong>Untouchable:</strong> Complete 5 consecutive levels without taking damage (Legendary)</li>
+                    <li><strong>Tournament Champion:</strong> Win 3 monthly tournaments (Mythic)</li>
+                </ul>
+                
+                <h2>Leaderboard System</h2>
+                
+                <h3>Ranking Categories</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Metric</th>
+                                <th>Reset Period</th>
+                                <th>Rewards</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Global High Score</td>
+                                <td>Highest single game score</td>
+                                <td>Never (All-time)</td>
+                                <td>Hall of Fame NFT</td>
+                            </tr>
+                            <tr>
+                                <td>Weekly Champions</td>
+                                <td>Total points this week</td>
+                                <td>Weekly</td>
+                                <td>10 ECP for top 10</td>
+                            </tr>
+                            <tr>
+                                <td>Monthly Masters</td>
+                                <td>Average score over month</td>
+                                <td>Monthly</td>
+                                <td>50 ECP + Special NFT</td>
+                            </tr>
+                            <tr>
+                                <td>Speed Runners</td>
+                                <td>Fastest level completion</td>
+                                <td>Never (All-time)</td>
+                                <td>Speed Demon NFT</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h3>Verification System</h3>
+                <div class="success-card">
+                    <div class="card-title">
+                        <i class="bi bi-shield-check" style="color: var(--success);"></i>
+                        Blockchain Verification
+                    </div>
+                    <p>All high scores and achievements are verified on blockchain, making cheating impossible and ensuring fair competition for all players.</p>
+                </div>
+                
+                <h2>Strategy for Maximum Rewards</h2>
+                
+                <h3>Guest Mode Optimization</h3>
+                <ul>
+                    <li>Focus on perfecting gameplay fundamentals</li>
+                    <li>Practice weapon switching and accuracy</li>
+                    <li>Learn enemy patterns and optimal strategies</li>
+                    <li>Use guest mode to experiment with high-risk techniques</li>
+                </ul>
+                
+                <h3>Wallet Mode Optimization</h3>
+                <ul>
+                    <li>Prioritize perfect clears for maximum token rewards</li>
+                    <li>Build long combo chains for multiplier bonuses</li>
+                    <li>Complete daily challenges for consistent income</li>
+                    <li>Aim for leaderboard positions during reset periods</li>
+                    <li>Participate in tournaments for large payouts</li>
+                </ul>
+                
+                <div class="warning-card">
+                    <div class="card-title">
+                        <i class="bi bi-exclamation-triangle" style="color: var(--warning);"></i>
+                        Important Note
+                    </div>
+                    <p>Web3 rewards require a connected wallet and may involve blockchain transaction fees. Guest mode players can enjoy the full game experience without any financial commitment.</p>
+                </div>
+            </section>
+            
+            <!-- Blockchain Section -->
+            <section id="blockchain" class="content-section">
+                <div class="content-header">
+                    <h1 class="content-title">Blockchain Integration</h1>
+                    <p class="content-subtitle">Understanding the Web3 technology behind Echo Pulse</p>
+                </div>
+                
+                <div class="info-card">
+                    <div class="card-title">
+                        <i class="bi bi-shield-check" style="color: var(--success);"></i>
+                        Decentralized Gaming
+                    </div>
+                    <p>Echo Pulse leverages blockchain technology to create a transparent, secure, and player-owned gaming ecosystem where achievements and rewards have real-world value.</p>
+                </div>
+                
+                <h2>Supported Networks</h2>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Network</th>
+                                <th>Chain ID</th>
+                                <th>Token Symbol</th>
+                                <th>Transaction Fees</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Ethereum Mainnet</td>
+                                <td>1</td>
+                                <td>ETH</td>
+                                <td>High ($5-50)</td>
+                                <td>✅ Active</td>
+                            </tr>
+                            <tr>
+                                <td>Polygon (Matic)</td>
+                                <td>137</td>
+                                <td>MATIC</td>
+                                <td>Low ($0.01-0.10)</td>
+                                <td>✅ Recommended</td>
+                            </tr>
+                            <tr>
+                                <td>Binance Smart Chain</td>
+                                <td>56</td>
+                                <td>BNB</td>
+                                <td>Medium ($0.20-2.00)</td>
+                                <td>✅ Active</td>
+                            </tr>
+                            <tr>
+                                <td>Arbitrum One</td>
+                                <td>42161</td>
+                                <td>ETH</td>
+                                <td>Low ($0.50-5.00)</td>
+                                <td>🔄 Coming Soon</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h2>Smart Contracts</h2>
+                
+                <h3>ECP Token Contract</h3>
+                <div class="success-card">
+                    <div class="card-title">
+                        <i class="bi bi-currency-bitcoin" style="color: var(--warning);"></i>
+                        Echo Pulse Coin (ECP)
+                    </div>
+                    <p>The native utility token for Echo Pulse ecosystem, used for rewards, staking, and governance.</p>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Network</th>
+                                <th>Contract Address</th>
+                                <th>Decimals</th>
+                                <th>Total Supply</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Polygon</td>
+                                <td><code>0x742d35Cc6232B3c0e3C9bF7DbE3FBD66Bc4b1Ad1</code></td>
+                                <td>18</td>
+                                <td>100,000,000 ECP</td>
+                            </tr>
+                            <tr>
+                                <td>BSC</td>
+                                <td><code>0x8F4C97A1D7c1D6c9A3B0C8B9d3F4E2A1C7B8D9E1</code></td>
+                                <td>18</td>
+                                <td>100,000,000 ECP</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h3>NFT Collection Contract</h3>
+                <div class="info-card">
+                    <div class="card-title">
+                        <i class="bi bi-gem" style="color: var(--primary-purple);"></i>
+                        Echo Pulse Achievements
+                    </div>
+                    <p>ERC-721 compliant NFTs representing rare in-game achievements and milestones.</p>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Network</th>
+                                <th>Contract Address</th>
+                                <th>Standard</th>
+                                <th>Total Minted</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Polygon</td>
+                                <td><code>0x1A2B3C4D5E6F789012345678901234567890ABCD</code></td>
+                                <td>ERC-721</td>
+                                <td>2,847 NFTs</td>
+                            </tr>
+                            <tr>
+                                <td>BSC</td>
+                                <td><code>0x9F8E7D6C5B4A3210987654321098765432109876</code></td>
+                                <td>BEP-721</td>
+                                <td>1,234 NFTs</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h2>Wallet Integration</h2>
+                
+                <h3>Supported Wallets</h3>
+                <ul>
+                    <li><strong>MetaMask:</strong> Most popular Ethereum wallet (Recommended)</li>
+                    <li><strong>Trust Wallet:</strong> Mobile-first wallet with BSC support</li>
+                    <li><strong>WalletConnect:</strong> Universal wallet connector</li>
+                    <li><strong>Coinbase Wallet:</strong> User-friendly option for beginners</li>
+                    <li><strong>Phantom:</strong> For future Solana integration</li>
+                </ul>
+                
+                <h3>Connection Process</h3>
+                <ol>
+                    <li>Click "Connect Wallet" button on any page</li>
+                    <li>Choose your preferred wallet from the modal</li>
+                    <li>Approve connection request in wallet</li>
+                    <li>Switch to supported network if prompted</li>
+                    <li>Begin earning rewards immediately</li>
+                </ol>
+                
+                <div class="warning-card">
+                    <div class="card-title">
+                        <i class="bi bi-shield-exclamation" style="color: var(--warning);"></i>
+                        Security Notice
+                    </div>
+                    <p>Echo Pulse will never ask for your private keys or seed phrase. Only approve transactions you understand and trust.</p>
+                </div>
+            </section>
+            
+            <!-- NFT Rewards Section -->
+            <section id="nft-rewards" class="content-section">
+                <div class="content-header">
+                    <h1 class="content-title">NFT Rewards System</h1>
+                    <p class="content-subtitle">Collectible achievements with real-world value</p>
+                </div>
+                
+                <div class="info-card">
+                    <div class="card-title">
+                        <i class="bi bi-trophy" style="color: var(--warning);"></i>
+                        Digital Collectibles
+                    </div>
+                    <p>Earn unique NFT badges that showcase your gaming achievements. Each NFT is verifiably rare and can be traded on major NFT marketplaces.</p>
+                </div>
+                
+                <h2>Rarity Levels</h2>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Rarity</th>
+                                <th>Drop Rate</th>
+                                <th>Total Supply</th>
+                                <th>Estimated Value</th>
+                                <th>Requirements</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Common</td>
+                                <td>50%</td>
+                                <td>Unlimited</td>
+                                <td>$5-15</td>
+                                <td>Basic achievements</td>
+                            </tr>
+                            <tr>
+                                <td>Rare</td>
+                                <td>25%</td>
+                                <td>10,000</td>
+                                <td>$25-75</td>
+                                <td>Skill-based challenges</td>
+                            </tr>
+                            <tr>
+                                <td>Epic</td>
+                                <td>15%</td>
+                                <td>1,000</td>
+                                <td>$100-300</td>
+                                <td>Major milestones</td>
+                            </tr>
+                            <tr>
+                                <td>Legendary</td>
+                                <td>8%</td>
+                                <td>100</td>
+                                <td>$500-1,500</td>
+                                <td>Exceptional performance</td>
+                            </tr>
+                            <tr>
+                                <td>Mythic</td>
+                                <td>2%</td>
+                                <td>10</td>
+                                <td>$2,000+</td>
+                                <td>World-class achievements</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h2>Achievement Categories</h2>
+                
+                <h3>Combat Mastery</h3>
+                <ul>
+                    <li><strong>First Blood</strong> (Common): Eliminate your first enemy</li>
+                    <li><strong>Hundred Hunter</strong> (Common): Defeat 100 enemies total</li>
+                    <li><strong>Phantom Slayer</strong> (Rare): Defeat 50 Phantom Guardians</li>
+                    <li><strong>Perfect Warrior</strong> (Epic): Complete 10 levels without taking damage</li>
+                    <li><strong>Legendary Destroyer</strong> (Legendary): Achieve 50x combo multiplier</li>
+                    <li><strong>Godlike Assassin</strong> (Mythic): Maintain 100% accuracy for 1000 shots</li>
+                </ul>
+                
+                <h3>Speed Running</h3>
+                <ul>
+                    <li><strong>Quick Reflexes</strong> (Common): Complete any level under 2 minutes</li>
+                    <li><strong>Speed Demon</strong> (Rare): Average under 60 seconds per level</li>
+                    <li><strong>Time Lord</strong> (Epic): Hold speed record on 5 different levels</li>
+                    <li><strong>Flash Master</strong> (Legendary): Complete all 15 levels under 30 seconds each</li>
+                    <li><strong>Quantum Runner</strong> (Mythic): Break world speed record</li>
+                </ul>
+                
+                <h3>Collection Achievements</h3>
+                <ul>
+                    <li><strong>Weapon Collector</strong> (Common): Use all 3 weapon types</li>
+                    <li><strong>Arsenal Master</strong> (Rare): Achieve mastery with all weapons</li>
+                    <li><strong>Complete Champion</strong> (Epic): Finish all 15 levels</li>
+                    <li><strong>Perfect Completion</strong> (Legendary): Perfect clear all levels</li>
+                    <li><strong>Echo Master</strong> (Mythic): Unlock every achievement in game</li>
+                </ul>
+                
+                <h2>Marketplace Integration</h2>
+                
+                <h3>Supported Marketplaces</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Platform</th>
+                                <th>Network</th>
+                                <th>Fees</th>
+                                <th>Special Features</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>OpenSea</td>
+                                <td>Ethereum, Polygon</td>
+                                <td>2.5%</td>
+                                <td>Largest marketplace</td>
+                            </tr>
+                            <tr>
+                                <td>Magic Eden</td>
+                                <td>Polygon</td>
+                                <td>2.0%</td>
+                                <td>Gaming focused</td>
+                            </tr>
+                            <tr>
+                                <td>BakerySwap</td>
+                                <td>BSC</td>
+                                <td>1.0%</td>
+                                <td>Lower fees</td>
+                            </tr>
+                            <tr>
+                                <td>Rarible</td>
+                                <td>Ethereum</td>
+                                <td>2.5%</td>
+                                <td>Creator-focused</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h3>Trading Statistics</h3>
+                <div class="success-card">
+                    <div class="card-title">
+                        <i class="bi bi-graph-up" style="color: var(--success);"></i>
+                        Market Performance
+                    </div>
+                    <p>Echo Pulse NFTs have shown strong market performance with consistent trading volume and growing collector interest.</p>
+                </div>
+                
+                <ul>
+                    <li><strong>Total Trading Volume:</strong> 847 ETH ($1.2M USD)</li>
+                    <li><strong>Average Sale Price:</strong> 0.15 ETH ($240 USD)</li>
+                    <li><strong>Unique Holders:</strong> 1,234 collectors</li>
+                    <li><strong>Floor Price:</strong> 0.08 ETH ($125 USD)</li>
+                    <li><strong>Monthly Volume:</strong> 45 ETH ($72,000 USD)</li>
+                </ul>
+            </section>
+            
+            <!-- Leaderboards Section -->
+            <section id="leaderboards" class="content-section">
+                <div class="content-header">
+                    <h1 class="content-title">Competitive Leaderboards</h1>
+                    <p class="content-subtitle">Global rankings and tournaments</p>
+                </div>
+                
+                <div class="warning-card">
+                    <div class="card-title">
+                        <i class="bi bi-trophy" style="color: var(--warning);"></i>
+                        Blockchain Verified Rankings
+                    </div>
+                    <p>All leaderboard scores are verified on blockchain, ensuring 100% accurate and tamper-proof competitive rankings.</p>
+                </div>
+                
+                <h2>Ranking Categories</h2>
+                
+                <h3>Global Rankings</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Category</th>
+                                <th>Reset Period</th>
+                                <th>Top Prize</th>
+                                <th>Qualification</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>All-Time High Score</td>
+                                <td>Never</td>
+                                <td>Hall of Fame NFT</td>
+                                <td>Single best game</td>
+                            </tr>
+                            <tr>
+                                <td>Monthly Champions</td>
+                                <td>30 days</td>
+                                <td>100 ECP + Epic NFT</td>
+                                <td>Monthly total score</td>
+                            </tr>
+                            <tr>
+                                <td>Weekly Warriors</td>
+                                <td>7 days</td>
+                                <td>25 ECP + Rare NFT</td>
+                                <td>Weekly total score</td>
+                            </tr>
+                            <tr>
+                                <td>Daily Dominance</td>
+                                <td>24 hours</td>
+                                <td>5 ECP</td>
+                                <td>Daily best score</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h3>Specialized Leaderboards</h3>
+                <ul>
+                    <li><strong>Speed Masters:</strong> Fastest completion times per level</li>
+                    <li><strong>Accuracy Legends:</strong> Highest shooting accuracy percentages</li>
+                    <li><strong>Survival Kings:</strong> Longest survival without taking damage</li>
+                    <li><strong>Combo Champions:</strong> Highest combo multipliers achieved</li>
+                    <li><strong>Token Earners:</strong> Most ECP earned in period</li>
+                </ul>
+                
+                <h2>Tournament System</h2>
+                
+                <h3>Monthly Tournaments</h3>
+                <div class="info-card">
+                    <div class="card-title">
+                        <i class="bi bi-calendar-event" style="color: var(--primary-purple);"></i>
+                        Competitive Events
+                    </div>
+                    <p>Join monthly tournaments for the chance to win large ECP prizes and exclusive NFTs. Limited entry ensures fair competition.</p>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tournament Type</th>
+                                <th>Entry Fee</th>
+                                <th>Prize Pool</th>
+                                <th>Max Players</th>
+                                <th>Duration</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Novice Cup</td>
+                                <td>Free</td>
+                                <td>100 ECP</td>
+                                <td>1000</td>
+                                <td>7 days</td>
+                            </tr>
+                            <tr>
+                                <td>Pro Championship</td>
+                                <td>10 ECP</td>
+                                <td>500 ECP</td>
+                                <td>500</td>
+                                <td>14 days</td>
+                            </tr>
+                            <tr>
+                                <td>Elite Masters</td>
+                                <td>50 ECP</td>
+                                <td>2000 ECP</td>
+                                <td>100</td>
+                                <td>30 days</td>
+                            </tr>
+                            <tr>
+                                <td>Legends Only</td>
+                                <td>100 ECP</td>
+                                <td>5000 ECP + Mythic NFT</td>
+                                <td>50</td>
+                                <td>30 days</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h3>Prize Distribution</h3>
+                <ul>
+                    <li><strong>1st Place:</strong> 40% of prize pool + Champion NFT</li>
+                    <li><strong>2nd Place:</strong> 25% of prize pool + Runner-up NFT</li>
+                    <li><strong>3rd Place:</strong> 15% of prize pool + Bronze NFT</li>
+                    <li><strong>4th-10th:</strong> 15% of prize pool (divided equally)</li>
+                    <li><strong>11th-25th:</strong> 5% of prize pool (divided equally)</li>
+                </ul>
+            </section>
+            
+            <!-- Transactions Section -->
+            <section id="transactions" class="content-section">
+                <div class="content-header">
+                    <h1 class="content-title">Blockchain Transactions</h1>
+                    <p class="content-subtitle">Understanding on-chain interactions and fees</p>
+                </div>
+                
+                <div class="warning-card">
+                    <div class="card-title">
+                        <i class="bi bi-exclamation-triangle" style="color: var(--warning);"></i>
+                        Transaction Fees
+                    </div>
+                    <p>All blockchain interactions require gas fees paid in the native currency of your chosen network. Choose Polygon for lowest fees.</p>
+                </div>
+                
+                <h2>Transaction Types</h2>
+                
+                <h3>Reward Claims</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Action</th>
+                                <th>Gas Cost</th>
+                                <th>Frequency</th>
+                                <th>Automatic?</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ECP Token Claim</td>
+                                <td>~21,000 gas</td>
+                                <td>After each game</td>
+                                <td>No - manual claim</td>
+                            </tr>
+                            <tr>
+                                <td>NFT Achievement Mint</td>
+                                <td>~85,000 gas</td>
+                                <td>When earned</td>
+                                <td>Yes - auto-mint</td>
+                            </tr>
+                            <tr>
+                                <td>Batch Reward Claim</td>
+                                <td>~45,000 gas</td>
+                                <td>Weekly</td>
+                                <td>No - manual claim</td>
+                            </tr>
+                            <tr>
+                                <td>Leaderboard Prize</td>
+                                <td>~35,000 gas</td>
+                                <td>End of period</td>
+                                <td>Yes - auto-distribute</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h3>Trading Operations</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Action</th>
+                                <th>Gas Cost</th>
+                                <th>Platform Fees</th>
+                                <th>Total Cost</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>NFT Listing</td>
+                                <td>~65,000 gas</td>
+                                <td>2.5%</td>
+                                <td>Gas + % of sale</td>
+                            </tr>
+                            <tr>
+                                <td>NFT Purchase</td>
+                                <td>~95,000 gas</td>
+                                <td>0%</td>
+                                <td>Gas only</td>
+                            </tr>
+                            <tr>
+                                <td>ECP Token Swap</td>
+                                <td>~150,000 gas</td>
+                                <td>0.3%</td>
+                                <td>Gas + swap fee</td>
+                            </tr>
+                            <tr>
+                                <td>Auction Bid</td>
+                                <td>~75,000 gas</td>
+                                <td>0%</td>
+                                <td>Gas only</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h2>Gas Optimization</h2>
+                
+                <h3>Best Practices</h3>
+                <ul>
+                    <li><strong>Batch Claims:</strong> Wait to accumulate multiple rewards before claiming</li>
+                    <li><strong>Off-Peak Hours:</strong> Transact during low network usage times</li>
+                    <li><strong>Layer 2 Networks:</strong> Use Polygon for 90% lower fees</li>
+                    <li><strong>Gas Limit:</strong> Don't over-estimate gas limits to avoid waste</li>
+                </ul>
+                
+                <h3>Fee Estimation</h3>
+                <div class="success-card">
+                    <div class="card-title">
+                        <i class="bi bi-calculator" style="color: var(--success);"></i>
+                        Real-Time Gas Tracker
+                    </div>
+                    <p>Echo Pulse displays current gas prices and estimated transaction costs before you confirm any blockchain operation.</p>
+                </div>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Network</th>
+                                <th>Typical Gas Price</th>
+                                <th>Token Claim Cost</th>
+                                <th>NFT Mint Cost</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Ethereum</td>
+                                <td>30-100 gwei</td>
+                                <td>$3-15</td>
+                                <td>$10-50</td>
+                            </tr>
+                            <tr>
+                                <td>Polygon</td>
+                                <td>30-200 gwei</td>
+                                <td>$0.01-0.05</td>
+                                <td>$0.05-0.20</td>
+                            </tr>
+                            <tr>
+                                <td>BSC</td>
+                                <td>5-20 gwei</td>
+                                <td>$0.25-1.00</td>
+                                <td>$1.00-4.00</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h2>Transaction History</h2>
+                
+                <h3>On-Chain Explorer</h3>
+                <p>All your Echo Pulse transactions are permanently recorded on blockchain and can be viewed on block explorers:</p>
+                <ul>
+                    <li><strong>Ethereum:</strong> Etherscan.io</li>
+                    <li><strong>Polygon:</strong> Polygonscan.com</li>
+                    <li><strong>BSC:</strong> BSCScan.com</li>
+                </ul>
+                
+                <h3>In-Game Transaction Log</h3>
+                <div class="info-card">
+                    <div class="card-title">
+                        <i class="bi bi-list-ul" style="color: var(--info);"></i>
+                        Wallet Dashboard
+                    </div>
+                    <p>Access your complete Echo Pulse transaction history through the in-game wallet dashboard, with direct links to blockchain explorers.</p>
+                </div>
+                
+                <h4>Available Information</h4>
+                <ul>
+                    <li>Transaction hash and block number</li>
+                    <li>Timestamp and confirmation status</li>
+                    <li>Gas used and fees paid</li>
+                    <li>Token amounts and NFT details</li>
+                    <li>Success/failure status and error messages</li>
+                </ul>
+            </section>
+            
+            <!-- Troubleshooting Section -->
+            <section id="troubleshooting" class="content-section">
+                <div class="content-header">
+                    <h1 class="content-title">Troubleshooting</h1>
+                    <p class="content-subtitle">Common issues and solutions</p>
+                </div>
+                
+                <h2>Wallet Connection Issues</h2>
+                
+                <h3>MetaMask Not Detected</h3>
+                <div class="warning-card">
+                    <div class="card-title">
+                        <i class="bi bi-exclamation-triangle" style="color: var(--danger);"></i>
+                        Wallet Not Found
+                    </div>
+                    <p><strong>Solution:</strong> Ensure MetaMask extension is installed and enabled. Refresh the page after installation.</p>
+                </div>
+                
+                <h3>Connection Hanging</h3>
+                <div class="code-block">
+                    <pre>1. Check MetaMask popup blocker
+2. Disable other wallet extensions
+3. Clear browser cache
+4. Try incognito/private browsing mode
+5. Restart browser completely</pre>
+                </div>
+                
+                <h3>Wrong Network</h3>
+                <p>If you're connected to the wrong blockchain network:</p>
+                <ol>
+                    <li>Open MetaMask</li>
+                    <li>Click network dropdown</li>
+                    <li>Select Ethereum Mainnet or Polygon</li>
+                    <li>Refresh the game page</li>
+                </ol>
+                
+                <h2>Game Performance Issues</h2>
+                
+                <h3>Low Frame Rate</h3>
+                <ul>
+                    <li>Close unnecessary browser tabs</li>
+                    <li>Disable browser extensions temporarily</li>
+                    <li>Lower your screen resolution</li>
+                    <li>Use hardware acceleration if available</li>
+                    <li>Update your graphics drivers</li>
+                </ul>
+                
+                <h3>Audio Problems</h3>
+                <div class="info-card">
+                    <div class="card-title">
+                        <i class="bi bi-volume-up" style="color: var(--info);"></i>
+                        Audio Issues
+                    </div>
+                    <p>Echo Pulse relies on audio cues. Ensure your browser has permission to play audio and your volume is appropriately set.</p>
+                </div>
+                
+                <h2>Gameplay Issues</h2>
+                
+                <h3>Controls Not Responding</h3>
+                <ol>
+                    <li>Click on the game canvas to focus</li>
+                    <li>Check for sticky keys or accessibility features</li>
+                    <li>Try refreshing the page</li>
+                    <li>Test with a different keyboard</li>
+                </ol>
+                
+                <h3>Echo System Not Working</h3>
+                <div class="code-block">
+                    <pre>Debug checklist:
+✓ Energy bar above 20 points
+✓ No cooldown timer active
+✓ Canvas has focus
+✓ Spacebar key functioning
+✓ Visual effects enabled</pre>
+                </div>
+                
+                <h2>Transaction Failures</h2>
+                
+                <h3>Insufficient Gas</h3>
+                <p>If blockchain transactions fail due to gas issues:</p>
+                <ul>
+                    <li>Increase gas price in MetaMask</li>
+                    <li>Wait for network congestion to decrease</li>
+                    <li>Switch to Polygon for lower fees</li>
+                    <li>Ensure sufficient ETH/MATIC for gas</li>
+                </ul>
+                
+                <h3>Nonce Errors</h3>
+                <div class="warning-card">
+                    <div class="card-title">
+                        <i class="bi bi-arrow-clockwise" style="color: var(--warning);"></i>
+                        Nonce Issues
+                    </div>
+                    <p><strong>Solution:</strong> Reset your MetaMask account. Go to Settings > Advanced > Reset Account. This clears transaction history but doesn't affect your funds.</p>
+                </div>
+                
+                <h2>Getting Help</h2>
+                
+                <h3>Community Support</h3>
+                <ul>
+                    <li><strong>Discord:</strong> Join our community server for real-time help</li>
+                    <li><strong>Reddit:</strong> r/EchoPulseGame for discussions and tips</li>
+                    <li><strong>GitHub:</strong> Report bugs and technical issues</li>
+                    <li><strong>Email:</strong> support@echopulse.game for direct assistance</li>
+                </ul>
+                
+                <h3>Bug Reports</h3>
+                <p>When reporting bugs, please include:</p>
+                <div class="code-block">
+                    <pre>- Browser type and version
+- Operating system
+- MetaMask version
+- Steps to reproduce
+- Error messages (if any)
+- Screenshots or video</pre>
+                </div>
+                
+                <a href="mailto:support@echopulse.game" class="btn btn-primary">
+                    <i class="bi bi-envelope"></i> Contact Support
+                </a>
+            </section>
+            
+            <!-- API Reference Section -->
+            <section id="api-reference" class="content-section">
+                <div class="content-header">
+                    <h1 class="content-title">API Reference</h1>
+                    <p class="content-subtitle">Developer documentation for Echo Pulse integration</p>
+                </div>
+                
+                <div class="info-card">
+                    <div class="card-title">
+                        <i class="bi bi-code-slash" style="color: var(--primary-purple);"></i>
+                        Developer Integration
+                    </div>
+                    <p>Build applications, tools, and integrations with Echo Pulse using our comprehensive REST API and JavaScript SDK.</p>
+                </div>
+                
+                <h2>Base URLs</h2>
+                
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Environment</th>
+                                <th>Base URL</th>
+                                <th>Rate Limit</th>
+                                <th>Authentication</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Production</td>
+                                <td><code>https://api.echopulse.game/v1</code></td>
+                                <td>1000 req/hour</td>
+                                <td>API Key required</td>
+                            </tr>
+                            <tr>
+                                <td>Testnet</td>
+                                <td><code>https://testnet-api.echopulse.game/v1</code></td>
+                                <td>5000 req/hour</td>
+                                <td>API Key required</td>
+                            </tr>
+                            <tr>
+                                <td>Sandbox</td>
+                                <td><code>https://sandbox-api.echopulse.game/v1</code></td>
+                                <td>Unlimited</td>
+                                <td>No auth required</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h2>Authentication</h2>
+                
+                <h3>API Key</h3>
+                <div class="warning-card">
+                    <div class="card-title">
+                        <i class="bi bi-key" style="color: var(--warning);"></i>
+                        Secure Your Keys
+                    </div>
+                    <p>Keep your API keys secure and never expose them in client-side code. Use server-side proxy endpoints for browser applications.</p>
+                </div>
+                
+                <div class="code-block">
+                    <pre>curl -H "Authorization: Bearer your_api_key_here" \
+  -H "Content-Type: application/json" \
+  https://api.echopulse.game/v1/player/stats</pre>
+                </div>
+            </section>
+            
+            <!-- Smart Contracts Section -->
+            <section id="smart-contracts" class="content-section">
+                <div class="content-header">
+                    <h1 class="content-title">Smart Contracts</h1>
+                    <p class="content-subtitle">On-chain contract documentation and interaction guides</p>
+                </div>
+                
+                <div class="warning-card">
+                    <div class="card-title">
+                        <i class="bi bi-shield-check" style="color: var(--success);"></i>
+                        Audited & Verified
+                    </div>
+                    <p>All Echo Pulse smart contracts have been audited by leading security firms and verified on blockchain explorers.</p>
+                </div>
+                
+                <h2>Contract Addresses</h2>
+                
+                <h3>Mainnet Deployments</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Contract</th>
+                                <th>Network</th>
+                                <th>Address</th>
+                                <th>Explorer</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ECP Token</td>
+                                <td>Base</td>
+                                <td><code>0x742d35Cc6232B3c0e3C9bF7DbE3FBD66Bc4b1Ad1</code></td>
+                                <td><a href="https://basescan.org/token/0x742d35Cc6232B3c0e3C9bF7DbE3FBD66Bc4b1Ad1" target="_blank">BaseScan</a></td>
+                            </tr>
+                            <tr>
+                                <td>Achievement NFT</td>
+                                <td>Base</td>
+                                <td><code>0x1A2B3C4D5E6F789012345678901234567890ABCD</code></td>
+                                <td><a href="https://basescan.org/token/0x1A2B3C4D5E6F789012345678901234567890ABCD" target="_blank">BaseScan</a></td>
+                            </tr>
+                            <tr>
+                                <td>Game Registry</td>
+                                <td>Base</td>
+                                <td><code>0x9F8E7D6C5B4A3210987654321098765432109876</code></td>
+                                <td><a href="https://basescan.org/address/0x9F8E7D6C5B4A3210987654321098765432109876" target="_blank">BaseScan</a></td>
+                            </tr>
+                            <tr>
+                                <td>Leaderboard</td>
+                                <td>Base</td>
+                                <td><code>0x5A6B7C8D9E0F1234567890123456789012345678</code></td>
+                                <td><a href="https://basescan.org/address/0x5A6B7C8D9E0F1234567890123456789012345678" target="_blank">BaseScan</a></td>
+                            </tr>
+                            <tr>
+                                <td>Reward Distributor</td>
+                                <td>Base</td>
+                                <td><code>0x2C3D4E5F6789012345678901234567890ABCDEF1</code></td>
+                                <td><a href="https://basescan.org/address/0x2C3D4E5F6789012345678901234567890ABCDEF1" target="_blank">BaseScan</a></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h2>Base Network Integration</h2>
+                
+                <h3>Why Base Network?</h3>
+                <div class="info-card">
+                    <div class="card-title">
+                        <i class="bi bi-lightning-charge" style="color: var(--primary-purple);"></i>
+                        Optimized for Gaming
+                    </div>
+                    <p>Echo Pulse leverages Coinbase's Base network for ultra-low transaction fees, fast confirmations, and seamless user experience perfect for gaming applications.</p>
+                </div>
+                
+                <h4>Base Network Advantages</h4>
+                <ul>
+                    <li><strong>Ultra-Low Fees:</strong> Transactions cost ~$0.001-0.01, perfect for frequent gaming interactions</li>
+                    <li><strong>Fast Confirmations:</strong> 2-second block times ensure instant reward distribution</li>
+                    <li><strong>Ethereum Compatibility:</strong> Full EVM compatibility with robust tooling</li>
+                    <li><strong>Coinbase Integration:</strong> Seamless onboarding for Coinbase users</li>
+                    <li><strong>Growing Ecosystem:</strong> Active DeFi and gaming community</li>
+                </ul>
+                
+                <h3>Network Configuration</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Value</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Network Name</td>
+                                <td>Base Mainnet</td>
+                                <td>Official network name</td>
+                            </tr>
+                            <tr>
+                                <td>RPC URL</td>
+                                <td>https://mainnet.base.org</td>
+                                <td>Primary RPC endpoint</td>
+                            </tr>
+                            <tr>
+                                <td>Chain ID</td>
+                                <td>8453</td>
+                                <td>Unique network identifier</td>
+                            </tr>
+                            <tr>
+                                <td>Currency Symbol</td>
+                                <td>ETH</td>
+                                <td>Native currency</td>
+                            </tr>
+                            <tr>
+                                <td>Block Explorer</td>
+                                <td>https://basescan.org</td>
+                                <td>Transaction explorer</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h2>ECP Token Contract</h2>
+                
+                <h3>Contract Overview</h3>
+                <div class="info-card">
+                    <div class="card-title">
+                        <i class="bi bi-currency-bitcoin" style="color: var(--warning);"></i>
+                        ERC-20 Standard on Base
+                    </div>
+                    <p>Echo Pulse Coin follows ERC-20 standard with additional gaming-specific functionality for rewards and staking, optimized for Base network's low-cost environment.</p>
+                </div>
+                
+                <h4>Key Functions</h4>
+                <div class="code-block">
+                    <pre>// Standard ERC-20 functions
+function transfer(address to, uint256 amount) public returns (bool)
+function balanceOf(address account) public view returns (uint256)
+function approve(address spender, uint256 amount) public returns (bool)
+
+// Gaming-specific functions
+function mintReward(address player, uint256 amount) external onlyGame
+function burnForUpgrade(address player, uint256 amount) external onlyGame
+function getPlayerRewards(address player) public view returns (uint256)</pre>
+                </div>
+                
+                <h3>Token Economics on Base</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Parameter</th>
+                                <th>Value</th>
+                                <th>Description</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>Total Supply</td>
+                                <td>100,000,000 ECP</td>
+                                <td>Hard cap, no additional minting</td>
+                            </tr>
+                            <tr>
+                                <td>Decimals</td>
+                                <td>18</td>
+                                <td>Standard ERC-20 precision</td>
+                            </tr>
+                            <tr>
+                                <td>Game Rewards</td>
+                                <td>40,000,000 ECP</td>
+                                <td>Reserved for player rewards</td>
+                            </tr>
+                            <tr>
+                                <td>Liquidity Pool</td>
+                                <td>25,000,000 ECP</td>
+                                <td>Base DEX liquidity</td>
+                            </tr>
+                            <tr>
+                                <td>Average Tx Fee</td>
+                                <td>~$0.005</td>
+                                <td>Extremely low Base fees</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h2>Achievement NFT Contract</h2>
+                
+                <h3>ERC-721 on Base Network</h3>
+                <div class="success-card">
+                    <div class="card-title">
+                        <i class="bi bi-gem" style="color: var(--primary-purple);"></i>
+                        Gas-Efficient NFTs
+                    </div>
+                    <p>Achievement NFTs on Base network enable frequent minting at minimal cost, allowing players to earn achievements without worrying about high gas fees.</p>
+                </div>
+                
+                <div class="code-block">
+                    <pre>// Core NFT functions
+function mint(address player, string calldata achievementId) external onlyGame
+function tokenURI(uint256 tokenId) public view override returns (string memory)
+function getPlayerAchievements(address player) public view returns (uint256[] memory)
+
+// Achievement-specific functions
+function getAchievementRarity(uint256 tokenId) public view returns (string memory)
+function isTransferable(uint256 tokenId) public view returns (bool)</pre>
+                </div>
+                
+                <h2>Base Network Interactions</h2>
+                
+                <h3>Adding Base to MetaMask</h3>
+                <div class="warning-card">
+                    <div class="card-title">
+                        <i class="bi bi-plus-circle" style="color: var(--info);"></i>
+                        Quick Setup
+                    </div>
+                    <p>Echo Pulse automatically prompts users to add Base network when connecting their wallet. Manual setup instructions below:</p>
+                </div>
+                
+                <ol>
+                    <li>Open MetaMask extension</li>
+                    <li>Click network dropdown (usually shows "Ethereum Mainnet")</li>
+                    <li>Click "Add Network" at the bottom</li>
+                    <li>Enter the Base network details from the table above</li>
+                    <li>Click "Save" and switch to Base network</li>
+                </ol>
+                
+                <h3>Getting Base ETH</h3>
+                <ul>
+                    <li><strong>Coinbase:</strong> Direct withdrawal to Base (no fees for Coinbase users)</li>
+                    <li><strong>Bridge from Ethereum:</strong> Use official Base bridge (bridge.base.org)</li>
+                    <li><strong>Cross-chain DEX:</strong> Swap from other networks via Across or Hop</li>
+                    <li><strong>Centralized Exchanges:</strong> Some exchanges offer direct Base withdrawals</li>
+                </ul>
+                
+                <h2>Contract Security</h2>
+                
+                <h3>Audit Reports</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Auditor</th>
+                                <th>Date</th>
+                                <th>Scope</th>
+                                <th>Status</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>CertiK</td>
+                                <td>August 2024</td>
+                                <td>All contracts</td>
+                                <td>✅ Passed</td>
+                            </tr>
+                            <tr>
+                                <td>ConsenSys Diligence</td>
+                                <td>July 2024</td>
+                                <td>Token + NFT</td>
+                                <td>✅ Passed</td>
+                            </tr>
+                            <tr>
+                                <td>OpenZeppelin</td>
+                                <td>June 2024</td>
+                                <td>Game Logic</td>
+                                <td>✅ Passed</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <h3>Security Features</h3>
+                <ul>
+                    <li><strong>Multi-signature Admin:</strong> Critical functions require 3-of-5 signatures</li>
+                    <li><strong>Time-locked Upgrades:</strong> 48-hour delay for any contract changes</li>
+                    <li><strong>Emergency Pause:</strong> Circuit breaker for critical vulnerabilities</li>
+                    <li><strong>Rate Limiting:</strong> Prevents spam and abuse</li>
+                    <li><strong>Signature Verification:</strong> All game scores cryptographically verified</li>
+                </ul>
+                
+                <h2>Developer Integration</h2>
+                
+                <h3>Base Network Web3 Examples</h3>
+                <div class="code-block">
+                    <pre>// Connect to Base network
+const provider = new ethers.providers.JsonRpcProvider('https://mainnet.base.org');
+
+// ECP Token contract on Base
+const ecpContract = new ethers.Contract(
+    '0x742d35Cc6232B3c0e3C9bF7DbE3FBD66Bc4b1Ad1',
+    ecpABI,
+    provider
+);
+
+// Check player's ECP balance
+const balance = await ecpContract.balanceOf(playerAddress);
+console.log(`Player has ${ethers.utils.formatEther(balance)} ECP`);</pre>
+                </div>
+                
+                <h3>Transaction Cost Comparison</h3>
+                <div class="table-container">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Operation</th>
+                                <th>Ethereum Mainnet</th>
+                                <th>Base Network</th>
+                                <th>Savings</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>ECP Token Transfer</td>
+                                <td>$3-15</td>
+                                <td>$0.001-0.01</td>
+                                <td>99.9%</td>
+                            </tr>
+                            <tr>
+                                <td>NFT Mint</td>
+                                <td>$10-50</td>
+                                <td>$0.005-0.02</td>
+                                <td>99.8%</td>
+                            </tr>
+                            <tr>
+                                <td>Claim Rewards</td>
+                                <td>$5-25</td>
+                                <td>$0.002-0.008</td>
+                                <td>99.9%</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div class="success-card">
+                    <div class="card-title">
+                        <i class="bi bi-graph-down" style="color: var(--success);"></i>
+                        Massive Cost Savings
+                    </div>
+                    <p>By deploying on Base network, Echo Pulse reduces transaction costs by over 99%, making micro-transactions and frequent rewards economically viable for all players.</p>
+                </div>
+            </section>
+            
+            <!-- FAQ Section -->
+            <section id="faq" class="content-section" style="margin-bottom: 100px;">
+                <div class="content-header">
+                    <h1 class="content-title">Frequently Asked Questions</h1>
+                    <p class="content-subtitle">Common questions about Echo Pulse gameplay and Web3 features</p>
+                </div>
+                
+                <h2>Gameplay Questions</h2>
+                
+                <h3>How do I see invisible enemies?</h3>
+                <div class="success-card">
+                    <div class="card-title">
+                        <i class="bi bi-lightbulb" style="color: var(--success);"></i>
+                        Echo Pulse System
+                    </div>
+                    <p>Press and hold SPACE to emit an echo pulse that temporarily reveals all enemies in the area. Manage your energy wisely as pulses consume power.</p>
+                </div>
+                
+                <h3>What's the difference between Guest and Wallet modes?</h3>
+                <ul>
+                    <li><strong>Guest Mode:</strong> Play for free, earn regular scores, compete on leaderboards</li>
+                    <li><strong>Wallet Mode:</strong> Connect crypto wallet, earn 1.5x score multiplier, receive ECP tokens and NFT rewards</li>
+                    <li>Both modes offer the complete gameplay experience</li>
+                </ul>
+                
+                <h2>Web3 & Crypto Questions</h2>
+                
+                <h3>Do I need cryptocurrency to play?</h3>
+                <div class="info-card">
+                    <div class="card-title">
+                        <i class="bi bi-coin" style="color: var(--info);"></i>
+                        Free to Play
+                    </div>
+                    <p>No! Echo Pulse is completely free to play in Guest mode. Connecting a wallet only adds bonus rewards.</p>
+                </div>
+                
+                <h3>Which wallets are supported?</h3>
+                <ul>
+                    <li>MetaMask (Recommended)</li>
+                    <li>Trust Wallet</li>
+                    <li>Coinbase Wallet</li>
+                    <li>WalletConnect compatible wallets</li>
+                </ul>
+                
+                <div class="info-card">
+                    <div class="card-title">
+                        <i class="bi bi-heart" style="color: var(--danger);"></i>
+                        Thank You for Playing!
+                    </div>
+                    <p>Echo Pulse is made possible by our amazing community of players. Your feedback, bug reports, and suggestions help make the game better for everyone.</p>
+                </div>
+            </section>
+        </main>
+    </div>
+    
+    <script>
+        // Sidebar navigation
+        document.querySelectorAll('.menu-link').forEach(link => {
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                
+                // Remove active class from all links and sections
+                document.querySelectorAll('.menu-link').forEach(l => l.classList.remove('active'));
+                document.querySelectorAll('.content-section').forEach(s => s.classList.remove('active'));
+                
+                // Add active class to clicked link
+                link.classList.add('active');
+                
+                // Show corresponding section
+                const targetId = link.getAttribute('href').substring(1);
+                const targetSection = document.getElementById(targetId);
+                if (targetSection) {
+                    targetSection.classList.add('active');
+                }
+            });
+        });
+        
+        // Floating particles animation
+        function createParticles() {
+            const container = document.getElementById('particles');
+            const particleCount = 30;
+            
+            for (let i = 0; i < particleCount; i++) {
+                const particle = document.createElement('div');
+                particle.className = 'particle';
+                particle.style.left = Math.random() * 100 + '%';
+                particle.style.animationDelay = Math.random() * 20 + 's';
+                particle.style.animationDuration = (15 + Math.random() * 10) + 's';
+                container.appendChild(particle);
+            }
+        }
+        
+        // Initialize particles
+        createParticles();
+        
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    target.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+    </script>
+    
+    <!-- Footer -->
+    <footer style="background: linear-gradient(135deg, #0a0a0a 0%, #1a1a2e 50%, #16213e 100%); padding: 40px 20px 20px; margin-top: 60px; border-top: 2px solid var(--primary-purple);">
+        <div style="max-width: 1200px; margin: 0 auto; text-align: center;">
+            <!-- Main Footer Content -->
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 40px; margin-bottom: 40px;">
+                <!-- Echo Pulse Info -->
+                <div>
+                    <h3 style="color: var(--primary-purple); font-size: 1.5rem; margin-bottom: 15px; font-weight: bold;">
+                        <i class="bi bi-controller" style="margin-right: 8px;"></i>
+                        Echo Pulse
+                    </h3>
+                    <p style="color: #b0b0b0; line-height: 1.6; margin-bottom: 15px;">
+                        The ultimate Web3 cyberpunk stealth-action game. Hunt invisible enemies, earn cryptocurrency, and collect rare NFT achievements.
+                    </p>
+                    <div style="display: flex; justify-content: center; gap: 15px;">
+                        <a href="#" style="color: var(--primary-purple); font-size: 1.5rem; transition: color 0.3s;" title="Discord">
+                            <i class="bi bi-discord"></i>
+                        </a>
+                        <a href="https://x.com/zarekvos" target="_blank" style="color: var(--primary-purple); font-size: 1.5rem; transition: color 0.3s;" title="Follow @zarekvos on X">
+                            <i class="bi bi-twitter-x"></i>
+                        </a>
+                        <a href="#" style="color: var(--primary-purple); font-size: 1.5rem; transition: color 0.3s;" title="GitHub">
+                            <i class="bi bi-github"></i>
+                        </a>
+                    </div>
+                </div>
+                
+                <!-- Quick Links -->
+                <div>
+                    <h4 style="color: var(--accent-cyan); font-size: 1.2rem; margin-bottom: 15px;">Quick Links</h4>
+                    <ul style="list-style: none; padding: 0; margin: 0;">
+                        <li style="margin-bottom: 8px;">
+                            <a href="new-game.html" style="color: #b0b0b0; text-decoration: none; transition: color 0.3s;">
+                                <i class="bi bi-play-fill" style="margin-right: 8px;"></i>Play Game
+                            </a>
+                        </li>
+                        <li style="margin-bottom: 8px;">
+                            <a href="leaderboard.html" style="color: #b0b0b0; text-decoration: none; transition: color 0.3s;">
+                                <i class="bi bi-trophy" style="margin-right: 8px;"></i>Leaderboard
+                            </a>
+                        </li>
+                        <li style="margin-bottom: 8px;">
+                            <a href="#first-game" style="color: #b0b0b0; text-decoration: none; transition: color 0.3s;">
+                                <i class="bi bi-book" style="margin-right: 8px;"></i>Game Guide
+                            </a>
+                        </li>
+                        <li style="margin-bottom: 8px;">
+                            <a href="#faq" style="color: #b0b0b0; text-decoration: none; transition: color 0.3s;">
+                                <i class="bi bi-question-circle" style="margin-right: 8px;"></i>FAQ
+                            </a>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Developer Info -->
+                <div>
+                    <h4 style="color: var(--accent-cyan); font-size: 1.2rem; margin-bottom: 15px;">Developer</h4>
+                    <div style="background: rgba(139, 69, 255, 0.1); border: 1px solid var(--primary-purple); border-radius: 10px; padding: 20px;">
+                        <div style="display: flex; align-items: center; justify-content: center; margin-bottom: 10px;">
+                            <i class="bi bi-code-slash" style="color: var(--primary-purple); font-size: 2rem; margin-right: 10px;"></i>
+                            <span style="color: #fff; font-size: 1.3rem; font-weight: bold;">zarekvos</span>
+                        </div>
+                        <p style="color: #b0b0b0; font-size: 0.9rem; margin: 0;">
+                            Full-stack developer passionate about Web3 gaming and blockchain innovation
+                        </p>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Bottom Bar -->
+            <div style="border-top: 1px solid rgba(139, 69, 255, 0.3); padding-top: 20px; display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 15px;">
+                <div style="color: #888; font-size: 0.9rem;">
+                    © 2024 Echo Pulse. All rights reserved.
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 8px; color: var(--primary-purple); font-weight: bold;">
+                    <i class="bi bi-heart-fill" style="color: var(--danger); animation: pulse 2s infinite;"></i>
+                    <span>Made by zarekvos</span>
+                </div>
+                
+                <div style="color: #888; font-size: 0.9rem;">
+                    <span>Powered by</span>
+                    <span style="color: var(--accent-cyan); margin-left: 5px;">Base Network</span>
+                </div>
+            </div>
+        </div>
+    </footer>
+    
+    <style>
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.1); }
+        }
+        
+        footer a:hover {
+            color: var(--primary-purple) !important;
+            transform: translateY(-2px);
+        }
+        
+        footer .bi:hover {
+            transform: scale(1.2);
+        }
+        
+        @media (max-width: 768px) {
+            footer div[style*="justify-content: space-between"] {
+                flex-direction: column;
+                text-align: center;
+            }
+        }
+    </style>
+</body>
+</html>
