@@ -13,6 +13,13 @@
     { "source": "/leaderboard", "destination": "/leaderboard.html" },
     { "source": "/rankings", "destination": "/leaderboard.html" }
   ],
+  "routes": [
+    { "src": "/game", "dest": "/new-game.html" },
+    { "src": "/home", "dest": "/landing.html" },
+    { "src": "/docs", "dest": "/docs.html" },
+    { "src": "/about", "dest": "/about.html" },
+    { "src": "/leaderboard", "dest": "/leaderboard.html" }
+  ],
   "cleanUrls": true,
   "trailingSlash": false
 }
