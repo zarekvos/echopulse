@@ -1,0 +1,75 @@
+{
+  "name": "Echo Pulse - Revolutionary Web3 Game",
+  "short_name": "EchoPulse",
+  "description": "Revolutionary echo-based shooting game with Web3 integration, NFTs, and play-to-earn mechanics for Farcaster",
+  "version": "1.0.0",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "fullscreen",
+  "orientation": "any",
+  "theme_color": "#1a1a2e",
+  "background_color": "#1a1a2e",
+  "categories": ["games", "entertainment", "action", "web3", "crypto", "farcaster"],
+  "lang": "en",
+  "protocol_handlers": [
+    {
+      "protocol": "farcaster",
+      "url": "./share?cast=%s"
+    }
+  ],
+  "icons": [
+    {
+      "src": "assets/Logo.png",
+      "sizes": "any",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/Logo.png", 
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "assets/Logo.png",
+      "sizes": "512x512", 
+      "type": "image/png"
+    }
+  ],
+  "screenshots": [
+    {
+      "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iODAwIiBoZWlnaHQ9IjYwMCIgdmlld0JveD0iMCAwIDgwMCA2MDAiIGZpbGw9Im5vbmUiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyI+CjxyZWN0IHdpZHRoPSI4MDAiIGhlaWdodD0iNjAwIiBmaWxsPSJ1cmwoI2JhY2tncm91bmQpIi8+Cjx0ZXh0IHg9IjQwMCIgeT0iMzAwIiB0ZXh0LWFuY2hvcj0ibWlkZGxlIiBmaWxsPSIjMDBmZmZmIiBmb250LXNpemU9IjQ4IiBmb250LWZhbWlseT0ibW9ub3NwYWNlIj5FQ0hPIFBVTFNFPC90ZXh0Pgo8Y2lyY2xlIGN4PSI0MDAiIGN5PSIzMDAiIHI9IjE1IiBmaWxsPSIjMDBmZmZmIi8+CjxjaXJjbGUgY3g9IjQwMCIgY3k9IjMwMCIgcj0iNDAiIHN0cm9rZT0iIzAwZmZmZiIgc3Ryb2tlLXdpZHRoPSIzIiBmaWxsPSJub25lIiBvcGFjaXR5PSIwLjciLz4KPGNpcmNsZSBjeD0iNDAwIiBjeT0iMzAwIiByPSI4MCIgc3Ryb2tlPSIjMDBmZmZmIiBzdHJva2Utd2lkdGg9IjIiIGZpbGw9Im5vbmUiIG9wYWNpdHk9IjAuNSIvPgo8ZGVmcz4KPGxpbmVhckdyYWRpZW50IGlkPSJiYWNrZ3JvdW5kIiB4MT0iMCIgeTE9IjAiIHgyPSI4MDAiIHkyPSI2MDAiPgo8c3RvcCBvZmZzZXQ9IjAlIiBzdG9wLWNvbG9yPSIjMWExYTJlIi8+CjxzdG9wIG9mZnNldD0iNTAlIiBzdG9wLWNvbG9yPSIjMTYyMTNlIi8+CjxzdG9wIG9mZnNldD0iMTAwJSIgc3RvcC1jb2xvcj0iIzBmMzQ2MCIvPgo8L2xpbmVhckdyYWRpZW50Pgo8L2RlZnM+Cjwvc3ZnPg==",
+      "sizes": "800x600",
+      "type": "image/svg+xml",
+      "form_factor": "wide"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Quick Play",
+      "short_name": "Play",
+      "description": "Start playing Echo Pulse immediately",
+      "url": "./index.html?quickstart=true",
+      "icons": [
+        {
+          "src": "data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iOTYiIGhlaWdodD0iOTYiIHZpZXdCb3g9IjAgMCA5NiA5NiIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBvbHlnb24gcG9pbnRzPSIyNCwxNiA3Miw0OCAyNCw4MCIgZmlsbD0iIzAwZmZmZiIvPgo8L3N2Zz4=",
+          "sizes": "96x96",
+          "type": "image/svg+xml"
+        }
+      ]
+    }
+  ],
+  "related_applications": [],
+  "prefer_related_applications": false,
+  "id": "echo-pulse-game",
+  "launch_handler": {
+    "client_mode": "focus-existing"
+  },
+  "share_target": {
+    "action": "./share",
+    "method": "GET",
+    "params": {
+      "title": "title",
+      "text": "text",
+      "url": "url"
+    }
+  }
+}
